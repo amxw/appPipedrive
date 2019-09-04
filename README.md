@@ -1,14 +1,21 @@
-# app install
+# APP Pipedrive CONVERSION
+
+### Installación
 
 primero clone el repositorio 
 
 despues ejecute el comando
-  git clone
+```sh
+$  git clone
+  ```
 
 despues ejecute
-
-npm install
+```sh
+$ npm install
+  ```
 
 por ultimo ejecute el comando 
 
-npm rum serve
+```sh
+$ npm rum serve
+  ```
