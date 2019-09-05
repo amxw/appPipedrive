@@ -102,12 +102,13 @@ export default {
           const idPIpe = res.data.data.id;
           self.agregarStage(idPIpe, self.api);
           //activar funcion de agregar campos
-          self.agregarCamposDeal(self.api);
+         // self.agregarCamposDeal(self.api);
           //activar funcion para campos persona
-          self.agregarCamposPersona(self.api);
+         // self.agregarCamposPersona(self.api);
         })
         .catch(function(error) {
           console.log(error);
+            alert("Error la clave api no pudo conectarse con los servicios de pipedrive. porfavor introdusca una clave api correcta");
         });
     },
     //creacion de stage para el embudo creado
