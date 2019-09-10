@@ -8,25 +8,33 @@
       :can-cancel="true"
       :is-full-page="fullPage"
     ></loading>
-    <v-flex lg8 offset-lg2>
+    <v-flex lg6>
       <v-card>
         <v-card-text>
           <h2>Configuracion de CRM</h2>
           <br />
-          <form @submit.prevent="agregarPipeline(nombre,tipoEmbudo)">
-            <v-text-field v-model="nombre" label="Nombre de Embudo"></v-text-field>
+          <form @submit.prevent="getDealFields(nombre,tipoEmbudo)">
+            <v-text-field
+              v-model="nombre"
+              label="Nombre de Embudo"
+              required
+              :rules="nameRules"
+            ></v-text-field>
             <v-select
+              :rules="[(v) => !!v || 'Gender is required']"
               :items="items"
               item-value="id"
               item-text="nombre"
               v-model="tipoEmbudo"
               label="Tipo de Embudo"
+              required
             ></v-select>
             <v-btn rounded color="success" type="submit" block dark>Agregar</v-btn>
           </form>
         </v-card-text>
       </v-card>
     </v-flex>
+    <vue-snotify></vue-snotify>
   </v-layout>
 </template>
 <script>
@@ -41,6 +49,10 @@ export default {
   name: "agregarPipeline",
   data() {
     return {
+      nameRules: [
+        v => !!v || "Nombre del Embudo en requerido",
+        v => v.length <= 20 || "El Nombre tiene demasiados catacteres"
+      ],
       isLoading: false,
       fullPage: true,
       nombre: "",
@@ -66,21 +78,72 @@ export default {
   methods: {
     onCancel() {
       const self = this;
-      console.log("User cancelled the loader.");
       this.isLoading = false;
 
-      self.$notify({
-        group: "foo",
-        title: "CRM Armado con exito",
-        type: "success"
+      self.$snotify.success("CRM creado con exito", "¡¡Felicitaciones!!", {
+        timeout: 3000,
+        showProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        titleMaxLength: 300,
+        backdrop: 0.5
       });
+      setTimeout(function() {
+        self.$snotify.remove();
+      }, 4000);
     },
 
     ...mapActions(["validarToken"]),
 
+    //funcion para validar si ya esta creado el crm
+    getDealFields(nombre, tipoEmbudo) {
+      const self = this;
+      const arrayCampos = [];
+      const options = {
+        method: "GET",
+        headers: {
+          "content-type": "application/json"
+        },
+        url:
+          "https://api.pipedrive.com/v1/dealFields?start=0&api_token=" +
+          this.api
+      };
+
+      axios(options).then(function(res) {
+        arrayCampos.push(res.data.data);
+
+        var datosarray = arrayCampos[0];
+
+        function esDato(dato) {
+          return dato.name === "Fecha pactada para Expediente";
+        }
+
+        var respuesta = datosarray.find(esDato);
+
+        if (respuesta == null) {
+          console.log("no se a creado crm");
+          self.agregarPipeline(nombre, tipoEmbudo);
+        } else {
+          self.$snotify.warning("Ya se a configurado el CRM", "¡¡ Alerta !!", {
+            timeout: 3000,
+            showProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            titleMaxLength: 300
+          });
+          setTimeout(function() {
+            self.$snotify.remove();
+          }, 4000);
+        }
+
+        self.nombre = "";
+        self.tipoEmbudo = "";
+      });
+    },
     //funcion para agregar embudo
     agregarPipeline(nombre, tipoEmbudo) {
       //agregar embudo
+      const embudo = tipoEmbudo;
       const self = this;
       const params = {
         name: this.nombre,
@@ -100,15 +163,22 @@ export default {
         .then(function(res) {
           self.isLoading = true;
           const idPIpe = res.data.data.id;
-          self.agregarStage(idPIpe, self.api);
-          //activar funcion de agregar campos
-         // self.agregarCamposDeal(self.api);
-          //activar funcion para campos persona
-         // self.agregarCamposPersona(self.api);
+
+          if (embudo === 1) {
+            self.agregarStage(idPIpe, self.api);
+            //activar funcion de agregar campos
+            self.agregarCamposDeal(self.api);
+            //activar funcion para campos persona
+            self.agregarCamposPersona(self.api);
+          } else if (embudo === 2) {
+            console.log("embudo Especial " + embudo);
+          }
         })
         .catch(function(error) {
           console.log(error);
-            alert("Error la clave api no pudo conectarse con los servicios de pipedrive. porfavor introdusca una clave api correcta");
+          alert(
+            "Error la clave api no pudo conectarse con los servicios de pipedrive. porfavor introdusca una clave api correcta"
+          );
         });
     },
     //creacion de stage para el embudo creado
@@ -387,8 +457,6 @@ export default {
                 5: { id: res.data.data.id, name: res.data.data.name }
               };
               stageid.push(stageVar6);
-
-              console.log(stageid[1][1].name);
             })
             .catch(function(error) {
               console.log(error);
@@ -396,7 +464,7 @@ export default {
         });
       }, 5000);
 
-       setTimeout(function() {
+      setTimeout(function() {
         self.agregarFiltros(api);
       }, 6000);
     },

@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import { auth, db } from '@/firebase'
 import router from '@/router'
+import { stat } from 'fs'
 
 Vue.use(Vuex)
 
@@ -21,6 +22,9 @@ export default new Vuex.Store({
     },
     setTarea(state, dato){
       state.api = dato
+    },
+    borrarapi(state){
+      state.api = "";
     }
     ,
     setApi(state,clave){
@@ -58,6 +62,7 @@ export default new Vuex.Store({
       auth.signOut()
       commit('nuevoUsuario', null)
       router.push({ name: 'ingreso' })
+      commit('borrarapi')
     },
     agregarApi({commit},dato){
       let clave = dato;

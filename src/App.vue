@@ -52,3 +52,10 @@ export default {
   }
 };
 </script>
+<style>
+.snotify {
+  width: auto !important;
+}
+
+
+</style>
