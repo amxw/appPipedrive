@@ -1,41 +1,38 @@
 <template>
-  <v-layout row wrap>
-    <loading
-      color="#08a742"
-      :width="120"
-      :height="120"
-      :active.sync="isLoading"
-      :can-cancel="true"
-      :is-full-page="fullPage"
-    ></loading>
-    <v-flex lg6>
-      <v-card>
-        <v-card-text>
-          <h2>Configuracion de CRM</h2>
-          <br />
-          <form @submit.prevent="getDealFields(nombre,tipoEmbudo)">
-            <v-text-field
-              v-model="nombre"
-              label="Nombre de Embudo"
-              required
-              :rules="nameRules"
-            ></v-text-field>
-            <v-select
-              :rules="[(v) => !!v || 'Gender is required']"
-              :items="items"
-              item-value="id"
-              item-text="nombre"
-              v-model="tipoEmbudo"
-              label="Tipo de Embudo"
-              required
-            ></v-select>
-            <v-btn rounded color="success" type="submit" block dark>Agregar</v-btn>
-          </form>
-        </v-card-text>
-      </v-card>
-    </v-flex>
-    <vue-snotify></vue-snotify>
-  </v-layout>
+  <v-container grid-list-md text-xs-left>
+    <v-layout row wrap>
+      <loading
+        color="#08a742"
+        :width="120"
+        :height="120"
+        :active.sync="isLoading"
+        :can-cancel="false"
+        :is-full-page="fullPage"
+      ></loading>
+      <v-flex lg12>
+        <v-card>
+          <v-img :src="img" aspect-ratio="4.75"></v-img>
+          <v-card-text>
+            <h2>Configuracion de CRM</h2>
+            <br />
+            <form @submit.prevent="getDealFields(nombre,tipoEmbudo)">
+              <v-text-field v-model="nombre" label="Nombre de Embudo" required></v-text-field>
+              <v-select
+                :items="items"
+                item-value="id"
+                item-text="nombre"
+                v-model="tipoEmbudo"
+                label="Tipo de Embudo"
+                required
+              ></v-select>
+              <v-btn rounded color="success" type="submit" block dark>Agregar</v-btn>
+            </form>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+      <vue-snotify></vue-snotify>
+    </v-layout>
+  </v-container>
 </template>
 <script>
 import Loading from "vue-loading-overlay";
@@ -49,10 +46,7 @@ export default {
   name: "agregarPipeline",
   data() {
     return {
-      nameRules: [
-        v => !!v || "Nombre del Embudo en requerido",
-        v => v.length <= 20 || "El Nombre tiene demasiados catacteres"
-      ],
+      img: require("@/assets/img_crm.jpg"),
       isLoading: false,
       fullPage: true,
       nombre: "",
@@ -68,7 +62,8 @@ export default {
           id: 2,
           nombre: "Especial"
         }
-      ]
+      ],
+      datosPipeline: []
     };
   },
   components: {
@@ -129,7 +124,8 @@ export default {
             showProgressBar: false,
             closeOnClick: false,
             pauseOnHover: true,
-            titleMaxLength: 300
+            titleMaxLength: 300,
+            backdrop: 0.5
           });
           setTimeout(function() {
             self.$snotify.remove();
@@ -1164,7 +1160,10 @@ export default {
             console.log(error);
           });
       });
-    }
+    },
+    /*obtener pipelines para mostrar datos*/
+
+   
   },
   created() {
     this.validarToken();

@@ -46,7 +46,7 @@ export default {
 
           self.$snotify.success(
             "Pipedrive conectado con exito",
-            "!! Felecitaciones !!",
+            "!! Felicitaciones !!",
             {
               timeout: 3000,
               showProgressBar: false,
@@ -76,7 +76,7 @@ export default {
           });
           setTimeout(function() {
             self.$snotify.remove();
-          }, 3200);
+          }, 4000);
         });
     }
   },

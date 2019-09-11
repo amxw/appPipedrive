@@ -8,16 +8,15 @@
         </router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn @click="cerrarSesion">
-        <span class="mr-2">Cerrar sesión</span>
-        <v-icon>fas fa-sign-out-alt</v-icon>
-      </v-btn>
+      <v-avatar>
+        <img :src="usuario.foto" alt="avatar" />
+      </v-avatar>
     </v-toolbar>
 
     <v-navigation-drawer class="navbar" v-model="drawer" app>
       <v-layout column align-center mt-5>
         <v-flex>
-          <v-avatar>
+          <v-avatar size="100">
             <img :src="usuario.foto" alt="avatar" />
           </v-avatar>
         </v-flex>
@@ -40,6 +39,14 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
+      <v-list-tile @click="cerrarSesion">
+        <v-list-tile-action>
+          <v-icon class="white--text">fas fa-sign-out-alt</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-content>
+          <v-list-tile-title class="white--text">cerrar Sesion</v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
     </v-navigation-drawer>
   </nav>
 </template>
@@ -61,8 +68,7 @@ export default {
           icon: "fab fa-slack-hash",
           to: { name: "agregarApi" }
         },
-        { title: "Admin", icon: "fas fa-address-card", to: { name: "admin" } },
-        
+        { title: "Admin", icon: "fas fa-address-card", to: { name: "admin" } }
       ]
     };
   },
@@ -70,7 +76,7 @@ export default {
     ...mapActions(["cerrarSesion"])
   },
   computed: {
-    ...mapState(["usuario"])
+    ...mapState(["usuario", "api"])
   }
 };
 </script>

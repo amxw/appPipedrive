@@ -4,12 +4,8 @@
     <notifications position="top center" class="notificacion" width="400px" group="foo" />
     <v-content>
       <v-container>
-        <v-chip v-if="api" class="tope">
-          <v-icon left color="blue">fab fa-slack-hash</v-icon>
-          {{api}}
-        </v-chip>
-        <br />
-        <br />
+        
+       
         <router-view />
       </v-container>
     </v-content>
