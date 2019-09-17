@@ -1161,9 +1161,9 @@ export default {
           });
       });
     },
-    /*obtener pipelines para mostrar datos*/
-
-   
+    llenarEmbudos(){
+      
+    }
   },
   created() {
     this.validarToken();

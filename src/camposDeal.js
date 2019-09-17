@@ -39,7 +39,7 @@ const datos1 = [
         field_type: "varchar_auto"
     },
 ]
- 
+
 const datos2 = [
     {
         name: "Financiamiento en años",
@@ -63,7 +63,7 @@ const datos2 = [
     },
 ]
 
-const  datos3 = [
+const datos3 = [
     {
         name: "Campaña",
         field_type: "varchar_auto"
@@ -72,35 +72,30 @@ const  datos3 = [
         name: "Fuente",
         field_type: "enum",
         options: [
+            "Organico/Directo",
+            "Linkeding",
             "Facebook",
-            "Website",
-            "Valla",
-            "Revista",
-            "Expocasa",
-            "Prensa",
-            "Cerramiento",
-            "Cartera",
-            "Inmobiliaria Externa",
             "Instagram",
-            "Volante",
-            "Stand",
+            "Google Ads",
+            "Email",
+            "Valla | Muppie | Cerramiento",
+            "Prensa | Revista | Volante",
+            "Referido",
+            "Cartera",
+            "Corredor Inmobiliario",
+            "Evento"
         ]
     },
     {
         name: "Medio",
         field_type: "enum",
         options: [
-            "En persona",
-            "Teléfono",
-            "Correo Electrónico",
-            "Adword",
-            "Mensaje Texto",
-            "Messenger",
             "Lead Ad",
-            "Expo Casa",
-            "Evento",
-            "Bi Evento",
-            "Banrural Evento",
+            "Messenger",
+            "Email",
+            "Teléfono",
+            "En persona",
+            "Whatsapp | sms"
         ]
     },
     {
@@ -180,7 +175,50 @@ const datos4 = [
     },
     {
         name: "Term",
+        field_type: "varchar_auto"
+    },
+    //Campos prospeccion
+    {
+        name: "¿por que quiere comprar?",
+        field_type: "enum",
+        options: [
+            "Nueva familia | matrimonio",
+            "Divorcio",
+            "La propíedad anterion no llena sus nesesidades actuales",
+            "Progreso economico",
+            "Inversion patrimonial: ahorro | retiro | herencia",
+            "Inversion financiera: ROI",
+        ]
+    },
+    {
+        name: "¿Para cuando quiere comprar?",
+        field_type: "enum",
+        options: [
+            "1 - 3 meses ",
+            "3 - 6 meses",
+            "mas de 6 meses",
+            "no sabe | no responde"
+        ]
+    },
+    {
+        name: "¿Cual es la cuota mensual presupuestado?",
+        field_type: "monetary"
+    },
+    {
+        name: "¿Quienes influyen en la toma de desicion?",
+        field_type: "set",
+        options: [
+            "Padres| suegros",
+            "Hijos",
+            "Conyuge",
+            "Asesores",
+            "Amigos"
+        ]
+    },
+    {
+        name: "observacion de prospeccion",
         field_type: "text"
     }
+
 ]
 export { datos1, datos2, datos3, datos4 }
