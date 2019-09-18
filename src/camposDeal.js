@@ -39,7 +39,7 @@ const datos1 = [
         field_type: "varchar_auto"
     },
 ]
- 
+
 const datos2 = [
     {
         name: "Financiamiento en años",
@@ -63,7 +63,7 @@ const datos2 = [
     },
 ]
 
-const  datos3 = [
+const datos3 = [
     {
         name: "Campaña",
         field_type: "varchar_auto"
@@ -72,35 +72,30 @@ const  datos3 = [
         name: "Fuente",
         field_type: "enum",
         options: [
-            "Facebook",
-            "Website",
-            "Valla",
-            "Revista",
-            "Expocasa",
-            "Prensa",
-            "Cerramiento",
+            "Organico directo",
+            "Linkeding,facebook",
+            "instagram",
+            "google, ads",
+            "email",
+            "valla|muppie|Cerramiento",
+            "prensa|Revista|Volante",
+            "Referido",
             "Cartera",
-            "Inmobiliaria Externa",
-            "Instagram",
-            "Volante",
-            "Stand",
+            "Corredor inmobiliario",
+            "Evento"
         ]
     },
     {
         name: "Medio",
         field_type: "enum",
         options: [
-            "En persona",
-            "Teléfono",
-            "Correo Electrónico",
-            "Adword",
-            "Mensaje Texto",
-            "Messenger",
-            "Lead Ad",
-            "Expo Casa",
-            "Evento",
-            "Bi Evento",
-            "Banrural Evento",
+            "Website",
+            "lead ad",
+            "Mensenger | chat",
+            "Email",
+            "Telefono",
+            "en persona",
+            "whatsapp"
         ]
     },
     {
@@ -180,7 +175,57 @@ const datos4 = [
     },
     {
         name: "Term",
-        field_type: "text"
+        field_type: "varchar_auto"
+    },
+    {
+        name: "¿Por que quiere comprar?",
+        field_type: "enum",
+        options: [
+            "Nueva familia | matrimonio",
+            "Divorcio",
+            "La proíedad anterion no llena sus nesesidades actuales",
+            "Progreso economico",
+            "Inversion patrimonial",
+            "Inversion financiera",
+        ]
+    },
+    {
+        name: "¿Para cuando quiere comprar?",
+        field_type: "enum",
+        options: [
+            "1 - 3 meses",
+            "3 - 6 meses",
+            "mas de 6 meses",
+            "no sabe / no responder"
+        ]
+    },
+    {
+        name: "¿Cual es la cuota mensual presupuestado?",
+        field_type: "monetary"
+    },
+    {
+        name: "¿Quienes influyen en la toma de decisión?",
+        field_type: "set",
+        options: [
+            "padres | suegros",
+            "hijos",
+            "conyuge",
+            "socios",
+            "amigos"
+        ]
+    },
+    {
+        name: "observación de prospección",
+        field_type: "text",
+    },
+    {
+        name: "producto interesado",
+        field_type: "enum",
+        options: [
+            "oficina",
+            "comercio",
+            "vivienda"
+        ]
     }
 ]
 export { datos1, datos2, datos3, datos4 }

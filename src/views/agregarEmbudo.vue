@@ -162,10 +162,12 @@ export default {
 
           if (embudo === 1) {
             self.agregarStage(idPIpe, self.api);
+            self.agregarPipelineProspeccion();
+            self.agregarEmbudoAdmistracionVenta();
             //activar funcion de agregar campos
-           // self.agregarCamposDeal(self.api);
+            //self.agregarCamposDeal(self.api);
             //activar funcion para campos persona
-            //.agregarCamposPersona(self.api);
+            // self.agregarCamposPersona(self.api);
           } else if (embudo === 2) {
             console.log("embudo Especial " + embudo);
           }
@@ -463,6 +465,222 @@ export default {
       setTimeout(function() {
         //self.agregarFiltros(api);
       }, 6000);
+    },
+    agregarPipelineProspeccion() {
+      //agregar embudo
+      const self = this;
+      const params = {
+        name: "prospeccion",
+        order_nr: "0",
+        deal_probability: "1",
+        active: "1"
+      };
+      const options = {
+        method: "POST",
+        headers: {
+          Accept: "application/json"
+        },
+        data: params,
+        url: "https://api.pipedrive.com/v1/pipelines?api_token=" + this.api
+      };
+      axios(options)
+        .then(function(res) {
+          const idPIpe = res.data.data.id;
+          self.agregarStageProspeccion(idPIpe, self.api);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    agregarStageProspeccion(id, api) {
+      const valores1 = [
+        {
+          name: "Interesado",
+          pipeline_id: id,
+          active_flag: true,
+          deal_probability: 1,
+          rotten_flag: true,
+          rotten_days: 3,
+          order_nr: 1
+        },
+        {
+          name: "No respondió",
+          pipeline_id: id,
+          active_flag: true,
+          deal_probability: 1,
+          rotten_flag: true,
+          rotten_days: 3,
+          order_nr: 2
+        },
+        {
+          name: "Si respondió",
+          pipeline_id: id,
+          active_flag: true,
+          deal_probability: 1,
+          rotten_flag: true,
+          rotten_days: 5,
+          order_nr: 3
+        }
+      ];
+
+      const self = this;
+      const stageid = this.idstage;
+      valores1.forEach(function(e) {
+        const params = {
+          name: e.name,
+          pipeline_id: e.pipeline_id,
+          active_flag: e.active_flag,
+          deal_probability: e.deal_probability,
+          rotten_flag: e.rotten_flag,
+          rotten_days: e.rotten_days,
+          order_nr: e.order_nr
+        };
+        const options = {
+          method: "POST",
+          headers: {
+            Accept: "application/json"
+          },
+          data: params,
+          url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+        };
+        axios(options)
+          .then(function(res) {
+            //this.idPipeline = res.data.data.id;
+            console.log("stage creado con exito " + res.data.data.name);
+            var idstage = res.data.data.id;
+            var idOrdden = e.order_nr;
+            var api = self.api;
+            console.log(idstage, idOrdden, api);
+            self.actualizarStage(idstage, idOrdden, api);
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+      });
+    },
+    async actualizarStage(idstage, idOrdden, api) {
+      var params = {
+        order_nr: idOrdden
+      };
+      var options = {
+        method: "PUT",
+        headers: {
+          Accept: "application/json"
+        },
+        data: params,
+        url:
+          "https://api.pipedrive.com/v1/stages/" + idstage + "?api_token=" + api
+      };
+
+      axios(options)
+        .then(function(res) {
+          console.log("stage actualizado con exito" + res.data.data);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    agregarEmbudoAdmistracionVenta() {
+      const params = {
+        name: "Administracion de Venta",
+        order_nr: "0",
+        deal_probability: "1",
+        active: "1"
+      };
+      const options = {
+        method: "POST",
+        headers: {
+          Accept: "application/json"
+        },
+        data: params,
+        url: "https://api.pipedrive.com/v1/pipelines?api_token=" + this.api
+      };
+
+      axios(options)
+        .then(function(res) {
+          const idAdVeta = res.data.data.id;
+          const api = self.api;
+          console.log("Embudo creado con exito" + idAdVeta);
+          self.agregarStageAdVentas(idAdVeta, api);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    agregarStageAdVentas(idAdVeta, api) {
+      const valores1 = [
+        {
+          name: "Interesado",
+          pipeline_id: id,
+          active_flag: true,
+          deal_probability: 1,
+          rotten_flag: true,
+          rotten_days: 3,
+          order_nr: 1
+        },
+        {
+          name: "Proceso de Credito",
+          pipeline_id: id,
+          active_flag: true,
+          deal_probability: 1,
+          rotten_flag: true,
+          rotten_days: 3,
+          order_nr: 2
+        },
+        {
+          name: "Listo para Escriturar",
+          pipeline_id: id,
+          active_flag: true,
+          deal_probability: 1,
+          rotten_flag: true,
+          rotten_days: 5,
+          order_nr: 3
+        },
+        {
+          name: "Listo para Entregar",
+          pipeline_id: id,
+          active_flag: true,
+          deal_probability: 1,
+          rotten_flag: true,
+          rotten_days: 5,
+          order_nr: 3
+        }
+      ];
+
+      const self = this;
+      const stageid = this.idstage;
+      valores1.forEach(function(e) {
+        const params = {
+          name: e.name,
+          pipeline_id: e.pipeline_id,
+          active_flag: e.active_flag,
+          deal_probability: e.deal_probability,
+          rotten_flag: e.rotten_flag,
+          rotten_days: e.rotten_days,
+          order_nr: e.order_nr
+        };
+        const options = {
+          method: "POST",
+          headers: {
+            Accept: "application/json"
+          },
+          data: params,
+          url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+        };
+        axios(options)
+          .then(function(res) {
+            //this.idPipeline = res.data.data.id;
+            console.log("stage creado con exito " + res.data.data.name);
+            var idstage = res.data.data.id;
+            var idOrdden = e.order_nr;
+            var api = self.api;
+            console.log(idstage, idOrdden, api);
+            self.actualizarStage(idstage, idOrdden, api);
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+      });
     },
     //Agregar campos a tratos
     agregarCamposDeal(api) {
@@ -1161,10 +1379,9 @@ export default {
           });
       });
     },
-    llenarEmbudos(){
-      
-    }
+    llenarEmbudos() {}
   },
+
   created() {
     this.validarToken();
   },
