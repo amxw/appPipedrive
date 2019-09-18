@@ -142,7 +142,7 @@ export default {
       const embudo = tipoEmbudo;
       const self = this;
       const params = {
-        name: this.nombre,
+        name: nombre,
         order_nr: "0",
         deal_probability: "1",
         active: "1"
@@ -163,9 +163,9 @@ export default {
           if (embudo === 1) {
             self.agregarStage(idPIpe, self.api);
             //activar funcion de agregar campos
-            self.agregarCamposDeal(self.api);
+           // self.agregarCamposDeal(self.api);
             //activar funcion para campos persona
-            self.agregarCamposPersona(self.api);
+            //.agregarCamposPersona(self.api);
           } else if (embudo === 2) {
             console.log("embudo Especial " + embudo);
           }
@@ -461,7 +461,7 @@ export default {
       }, 5000);
 
       setTimeout(function() {
-        self.agregarFiltros(api);
+        //self.agregarFiltros(api);
       }, 6000);
     },
     //Agregar campos a tratos
@@ -1161,9 +1161,9 @@ export default {
           });
       });
     },
-    /*obtener pipelines para mostrar datos*/
-
-   
+    llenarEmbudos(){
+      
+    }
   },
   created() {
     this.validarToken();
