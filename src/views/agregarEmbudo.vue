@@ -165,9 +165,9 @@ export default {
             self.agregarPipelineProspeccion();
             self.agregarEmbudoAdmistracionVenta();
             //activar funcion de agregar campos
-            //self.agregarCamposDeal(self.api);
+            self.agregarCamposDeal(self.api);
             //activar funcion para campos persona
-            // self.agregarCamposPersona(self.api);
+            self.agregarCamposPersona(self.api);
           } else if (embudo === 2) {
             console.log("embudo Especial " + embudo);
           }
@@ -466,6 +466,7 @@ export default {
         //self.agregarFiltros(api);
       }, 6000);
     },
+    //pipeline Propeccion
     agregarPipelineProspeccion() {
       //agregar embudo
       const self = this;
@@ -492,6 +493,7 @@ export default {
           console.log(error);
         });
     },
+    //stage Prospeccion
     agregarStageProspeccion(id, api) {
       const valores1 = [
         {
@@ -558,6 +560,7 @@ export default {
           });
       });
     },
+    //actualizador de stage
     async actualizarStage(idstage, idOrdden, api) {
       var params = {
         order_nr: idOrdden
@@ -580,7 +583,9 @@ export default {
           console.log(error);
         });
     },
+    //pipeline de administracion ventas
     agregarEmbudoAdmistracionVenta() {
+      const self = this;
       const params = {
         name: "Administracion de Venta",
         order_nr: "0",
@@ -607,7 +612,8 @@ export default {
           console.log(error);
         });
     },
-    agregarStageAdVentas(idAdVeta, api) {
+    //stage administracion de ventas
+    agregarStageAdVentas(id, api) {
       const valores1 = [
         {
           name: "Interesado",
@@ -617,7 +623,9 @@ export default {
           rotten_flag: true,
           rotten_days: 3,
           order_nr: 1
-        },
+        }
+      ];
+      const valores2 = [
         {
           name: "Proceso de Credito",
           pipeline_id: id,
@@ -626,7 +634,9 @@ export default {
           rotten_flag: true,
           rotten_days: 3,
           order_nr: 2
-        },
+        }
+      ];
+      const valores3 = [
         {
           name: "Listo para Escriturar",
           pipeline_id: id,
@@ -635,7 +645,9 @@ export default {
           rotten_flag: true,
           rotten_days: 5,
           order_nr: 3
-        },
+        }
+      ];
+      const valores4 = [
         {
           name: "Listo para Entregar",
           pipeline_id: id,
@@ -643,44 +655,117 @@ export default {
           deal_probability: 1,
           rotten_flag: true,
           rotten_days: 5,
-          order_nr: 3
+          order_nr: 4
         }
       ];
 
       const self = this;
-      const stageid = this.idstage;
-      valores1.forEach(function(e) {
-        const params = {
-          name: e.name,
-          pipeline_id: e.pipeline_id,
-          active_flag: e.active_flag,
-          deal_probability: e.deal_probability,
-          rotten_flag: e.rotten_flag,
-          rotten_days: e.rotten_days,
-          order_nr: e.order_nr
-        };
-        const options = {
-          method: "POST",
-          headers: {
-            Accept: "application/json"
-          },
-          data: params,
-          url: "https://api.pipedrive.com/v1/stages?api_token=" + api
-        };
-        axios(options)
-          .then(function(res) {
-            //this.idPipeline = res.data.data.id;
-            console.log("stage creado con exito " + res.data.data.name);
-            var idstage = res.data.data.id;
-            var idOrdden = e.order_nr;
-            var api = self.api;
-            console.log(idstage, idOrdden, api);
-            self.actualizarStage(idstage, idOrdden, api);
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
-      });
+      setTimeout(function() {
+        valores1.forEach(function(e) {
+          const params = {
+            name: e.name,
+            pipeline_id: e.pipeline_id,
+            active_flag: e.active_flag,
+            deal_probability: e.deal_probability,
+            rotten_flag: e.rotten_flag,
+            rotten_days: e.rotten_days,
+            order_nr: e.order_nr
+          };
+          const options = {
+            method: "POST",
+            headers: {
+              Accept: "application/json"
+            },
+            data: params,
+            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+          };
+          self.axioStage(options, e.order_nr);
+        });
+      }, 1000);
+
+      setTimeout(function() {
+        valores2.forEach(function(e) {
+          const params = {
+            name: e.name,
+            pipeline_id: e.pipeline_id,
+            active_flag: e.active_flag,
+            deal_probability: e.deal_probability,
+            rotten_flag: e.rotten_flag,
+            rotten_days: e.rotten_days,
+            order_nr: e.order_nr
+          };
+          const options = {
+            method: "POST",
+            headers: {
+              Accept: "application/json"
+            },
+            data: params,
+            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+          };
+          self.axioStage(options, e.order_nr);
+        });
+      }, 2000);
+
+      setTimeout(function() {
+        valores3.forEach(function(e) {
+          const params = {
+            name: e.name,
+            pipeline_id: e.pipeline_id,
+            active_flag: e.active_flag,
+            deal_probability: e.deal_probability,
+            rotten_flag: e.rotten_flag,
+            rotten_days: e.rotten_days,
+            order_nr: e.order_nr
+          };
+          const options = {
+            method: "POST",
+            headers: {
+              Accept: "application/json"
+            },
+            data: params,
+            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+          };
+          self.axioStage(options, e.order_nr);
+        });
+      }, 3000);
+
+      setTimeout(function() {
+        valores4.forEach(function(e) {
+          const params = {
+            name: e.name,
+            pipeline_id: e.pipeline_id,
+            active_flag: e.active_flag,
+            deal_probability: e.deal_probability,
+            rotten_flag: e.rotten_flag,
+            rotten_days: e.rotten_days,
+            order_nr: e.order_nr
+          };
+          const options = {
+            method: "POST",
+            headers: {
+              Accept: "application/json"
+            },
+            data: params,
+            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+          };
+          self.axioStage(options, e.order_nr);
+        });
+      }, 4000);
+    },
+    //funccion axios para mandar data
+    axioStage(options,orden) {
+      const self = this;
+      axios(options)
+        .then(function(res) {
+          //this.idPipeline = res.data.data.id;
+          var idstage = res.data.data.id;
+          var idOrdden = orden;
+          var api = self.api;
+          self.actualizarStage(idstage, idOrdden, api);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     },
     //Agregar campos a tratos
     agregarCamposDeal(api) {
@@ -879,6 +964,7 @@ export default {
         self.onCancel();
       }, 21000);
     },
+    //agregar embudos 
     agregarFiltros(api) {
       const estadoid = this.idstage;
       const filtros = [
@@ -1379,7 +1465,6 @@ export default {
           });
       });
     },
-    llenarEmbudos() {}
   },
 
   created() {
