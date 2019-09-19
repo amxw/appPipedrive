@@ -15,20 +15,30 @@
           <v-card-text>
             <h2>Configuracion de CRM</h2>
             <br />
-            <form @submit.prevent="getDealFields(nombre,tipoEmbudo)">
-              <v-text-field v-model="nombre" label="Nombre de Embudo" required></v-text-field>
-              <v-select
-                :items="items"
-                item-value="id"
-                item-text="nombre"
-                v-model="tipoEmbudo"
-                label="Tipo de Embudo"
-                required
-              ></v-select>
+            <form @submit.prevent="getDealFields(pipelinesName,tipoEmbudo)">
+              <v-layout row>
+                <v-flex lg12>
+                  <v-text-field v-model="nombre" label="Nombre del Embudo del proyecto"></v-text-field>
+                </v-flex>
+                <v-flex lg1>
+                  <v-btn v-on:click="addPipelineMult(nombre)" color="conversion" dark center fab>
+                    <v-icon>fa-plus</v-icon>
+                  </v-btn>
+                </v-flex>
+              </v-layout>
+              <v-list subheader>
+                <v-list-tile v-for="item in pipelinesName" :key="item.id">
+                  <v-list-tile-content>
+                    <v-list-tile-title v-html="item.nombre"></v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+
               <v-btn rounded color="success" type="submit" block dark>Agregar</v-btn>
             </form>
           </v-card-text>
         </v-card>
+        {{idstage}}
       </v-flex>
       <vue-snotify></vue-snotify>
     </v-layout>
@@ -46,6 +56,7 @@ export default {
   name: "agregarPipeline",
   data() {
     return {
+      pipelinesName: [],
       img: require("@/assets/img_crm.jpg"),
       isLoading: false,
       fullPage: true,
@@ -71,6 +82,25 @@ export default {
   },
 
   methods: {
+    addPipelineMult(nombre) {
+      const name = this.nombre;
+      const datos = this.pipelinesName;
+      const id = Date.now();
+      const valores = { id, nombre };
+      if (name == "") {
+        this.$snotify.warning("El Campo no puede esta ", "¡¡Alerta!!", {
+          timeout: 2000,
+          showProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          titleMaxLength: 300,
+          backdrop: 0.5
+        });
+      } else {
+        datos.push(valores);
+        this.nombre = "";
+      }
+    },
     onCancel() {
       const self = this;
       this.isLoading = false;
@@ -117,7 +147,7 @@ export default {
 
         if (respuesta == null) {
           console.log("no se a creado crm");
-          self.agregarPipeline(nombre, tipoEmbudo);
+          self.agregarPipeline(nombre);
         } else {
           self.$snotify.warning("Ya se a configurado el CRM", "¡¡ Alerta !!", {
             timeout: 3000,
@@ -137,47 +167,46 @@ export default {
       });
     },
     //funcion para agregar embudo
-    agregarPipeline(nombre, tipoEmbudo) {
+    agregarPipeline(nombre) {
       //agregar embudo
-      const embudo = tipoEmbudo;
       const self = this;
-      const params = {
-        name: nombre,
-        order_nr: "0",
-        deal_probability: "1",
-        active: "1"
-      };
-      const options = {
-        method: "POST",
-        headers: {
-          "content-type": "application/json"
-        },
-        data: params,
-        url: "https://api.pipedrive.com/v1/pipelines?api_token=" + this.api
-      };
-      axios(options)
-        .then(function(res) {
-          self.isLoading = true;
-          const idPIpe = res.data.data.id;
+      const valores = nombre;
 
-          if (embudo === 1) {
+      valores.forEach(function(e) {
+        const params = {
+          name: e.nombre,
+          order_nr: "0",
+          deal_probability: "1",
+          active: "1"
+        };
+        const options = {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          data: params,
+          url: "https://api.pipedrive.com/v1/pipelines?api_token=" + self.api
+        };
+        axios(options)
+          .then(function(res) {
+            //self.isLoading = true;
+            const idPIpe = res.data.data.id;
             self.agregarStage(idPIpe, self.api);
-            self.agregarPipelineProspeccion();
-            self.agregarEmbudoAdmistracionVenta();
-            //activar funcion de agregar campos
-            self.agregarCamposDeal(self.api);
-            //activar funcion para campos persona
-            self.agregarCamposPersona(self.api);
-          } else if (embudo === 2) {
-            console.log("embudo Especial " + embudo);
-          }
-        })
-        .catch(function(error) {
-          console.log(error);
-          alert(
-            "Error la clave api no pudo conectarse con los servicios de pipedrive. porfavor introdusca una clave api correcta"
-          );
-        });
+          })
+          .catch(function(error) {
+            console.log(error);
+            alert(
+              "Error la clave api no pudo conectarse con los servicios de pipedrive. porfavor introdusca una clave api correcta"
+            );
+          });
+      });
+/*
+      self.agregarPipelineProspeccion();
+      self.agregarEmbudoAdmistracionVenta();
+      //activar funcion de agregar campos
+      self.agregarCamposDeal(self.api);
+      //activar funcion para campos persona
+      self.agregarCamposPersona(self.api);*/
     },
     //creacion de stage para el embudo creado
 
@@ -753,7 +782,7 @@ export default {
       }, 4000);
     },
     //funccion axios para mandar data
-    axioStage(options,orden) {
+    axioStage(options, orden) {
       const self = this;
       axios(options)
         .then(function(res) {
@@ -964,7 +993,7 @@ export default {
         self.onCancel();
       }, 21000);
     },
-    //agregar embudos 
+    //agregar embudos
     agregarFiltros(api) {
       const estadoid = this.idstage;
       const filtros = [
@@ -1464,7 +1493,7 @@ export default {
             console.log(error);
           });
       });
-    },
+    }
   },
 
   created() {
