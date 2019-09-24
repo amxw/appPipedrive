@@ -15,16 +15,12 @@
           <v-card-text>
             <h2>Configuracion de CRM</h2>
             <br />
-            <form @submit.prevent="getDealFields(nombre,tipoEmbudo)">
-              <v-text-field v-model="nombre" label="Nombre de Embudo" required></v-text-field>
-              <v-select
-                :items="items"
-                item-value="id"
-                item-text="nombre"
-                v-model="tipoEmbudo"
-                label="Tipo de Embudo"
+            <form @submit.prevent="getDealFields(nombre)">
+              <v-text-field
+                v-model="nombre"
+                label="Nombre de Embudo (Nombre del Proyecto)"
                 required
-              ></v-select>
+              ></v-text-field>
               <v-btn rounded color="success" type="submit" block dark>Agregar</v-btn>
             </form>
           </v-card-text>
@@ -71,11 +67,37 @@ export default {
   },
 
   methods: {
+    notification(mensaje, tipo) {
+      this.$snotify.info(mensaje, "", {
+        timeout: 3000,
+        showProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        titleMaxLength: 300,
+        backdrop: 0.5
+      });
+    },
     onCancel() {
       const self = this;
       this.isLoading = false;
-
+      self.idstage = [];
       self.$snotify.success("CRM creado con exito", "¡¡Felicitaciones!!", {
+        timeout: 3000,
+        showProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        titleMaxLength: 300,
+        backdrop: 0.5
+      });
+      setTimeout(function() {
+        self.$snotify.remove();
+      }, 4000);
+    },
+    onCancelEmbudo() {
+      const self = this;
+      this.isLoading = false;
+      self.idstage = [];
+      self.$snotify.success("Embudo creado con exito", "¡¡Felicitaciones!!", {
         timeout: 3000,
         showProgressBar: false,
         closeOnClick: false,
@@ -91,7 +113,7 @@ export default {
     ...mapActions(["validarToken"]),
 
     //funcion para validar si ya esta creado el crm
-    getDealFields(nombre, tipoEmbudo) {
+    getDealFields(nombre) {
       const self = this;
       const arrayCampos = [];
       const options = {
@@ -117,30 +139,28 @@ export default {
 
         if (respuesta == null) {
           console.log("no se a creado crm");
-          self.agregarPipeline(nombre, tipoEmbudo);
+          self.agregarPipeline(nombre);
+          self.agregarPipelineProspeccion();
+          self.agregarEmbudoAdmistracionVenta();
+          //activar funcion de agregar campos
+          self.agregarCamposDeal(self.api);
+          //activar funcion para campos persona
+          self.agregarCamposPersona(self.api);
         } else {
-          self.$snotify.warning("Ya se a configurado el CRM", "¡¡ Alerta !!", {
-            timeout: 3000,
-            showProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            titleMaxLength: 300,
-            backdrop: 0.5
-          });
+          self.agregarPipeline(nombre);
           setTimeout(function() {
-            self.$snotify.remove();
-          }, 4000);
+            self.onCancelEmbudo();
+          }, 8000);
         }
 
         self.nombre = "";
-        self.tipoEmbudo = "";
       });
     },
     //funcion para agregar embudo
-    agregarPipeline(nombre, tipoEmbudo) {
+    agregarPipeline(nombre) {
       //agregar embudo
-      const embudo = tipoEmbudo;
       const self = this;
+      self.notification("Creando Embudo " + nombre, "info");
       const params = {
         name: nombre,
         order_nr: "0",
@@ -159,18 +179,9 @@ export default {
         .then(function(res) {
           self.isLoading = true;
           const idPIpe = res.data.data.id;
+          const namePime = res.data.data.name;
 
-          if (embudo === 1) {
-            self.agregarStage(idPIpe, self.api);
-            self.agregarPipelineProspeccion();
-            self.agregarEmbudoAdmistracionVenta();
-            //activar funcion de agregar campos
-            self.agregarCamposDeal(self.api);
-            //activar funcion para campos persona
-            self.agregarCamposPersona(self.api);
-          } else if (embudo === 2) {
-            console.log("embudo Especial " + embudo);
-          }
+          self.agregarStage(idPIpe, self.api, namePime);
         })
         .catch(function(error) {
           console.log(error);
@@ -181,7 +192,7 @@ export default {
     },
     //creacion de stage para el embudo creado
 
-    agregarStage(id, api) {
+    agregarStage(id, api, nombre) {
       const valores1 = [
         {
           name: "Interesado",
@@ -463,7 +474,7 @@ export default {
       }, 5000);
 
       setTimeout(function() {
-        //self.agregarFiltros(api);
+        self.agregarFiltros(api, nombre);
       }, 6000);
     },
     //pipeline Propeccion
@@ -488,6 +499,7 @@ export default {
         .then(function(res) {
           const idPIpe = res.data.data.id;
           self.agregarStageProspeccion(idPIpe, self.api);
+          self.notification("Creando Embudo Prospeccion", "info");
         })
         .catch(function(error) {
           console.log(error);
@@ -586,6 +598,7 @@ export default {
     //pipeline de administracion ventas
     agregarEmbudoAdmistracionVenta() {
       const self = this;
+
       const params = {
         name: "Administracion de Venta",
         order_nr: "0",
@@ -607,6 +620,7 @@ export default {
           const api = self.api;
           console.log("Embudo creado con exito" + idAdVeta);
           self.agregarStageAdVentas(idAdVeta, api);
+          self.notification("Creando Embudo Administracion de ventas", "info");
         })
         .catch(function(error) {
           console.log(error);
@@ -753,7 +767,7 @@ export default {
       }, 4000);
     },
     //funccion axios para mandar data
-    axioStage(options,orden) {
+    axioStage(options, orden) {
       const self = this;
       axios(options)
         .then(function(res) {
@@ -801,6 +815,7 @@ export default {
       }, 3000);
 
       setTimeout(function() {
+        const the = this;
         campos2.forEach(function(e) {
           const self = this;
           const params = {
@@ -824,6 +839,7 @@ export default {
               console.log(error);
             });
         });
+        the.notification("Creando Campos Personalizados Negocios", "info");
       }, 6000);
 
       setTimeout(function() {
@@ -909,6 +925,7 @@ export default {
               console.log(error);
             });
         });
+        self.notification("Creando Campos personalizados de Personas", "info");
       }, 15000);
 
       setTimeout(function() {
@@ -964,12 +981,13 @@ export default {
         self.onCancel();
       }, 21000);
     },
-    //agregar embudos 
-    agregarFiltros(api) {
+    //agregar embudos
+    agregarFiltros(api, nombre) {
+      this.notification("Creadon Filtros de Embudo " + nombre, "info");
       const estadoid = this.idstage;
       const filtros = [
         {
-          name: "Atrasado Interesado",
+          name: "Atrasado Interesado " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1008,7 +1026,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Cita Establecida",
+          name: "Atrasado Cita Establecida " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1047,7 +1065,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Contactado sin 5 Seguimientos",
+          name: "Atrasado Contactado sin 5 Seguimientos " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1093,7 +1111,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Contactado",
+          name: "Atrasado Contactado " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1132,7 +1150,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Interesado Sin 4 Llamadas",
+          name: "Atrasado Interesado Sin 4 Llamadas " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1178,7 +1196,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Negociación",
+          name: "Atrasado Negociación " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1217,7 +1235,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Reserva",
+          name: "Atrasado Reserva " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1256,7 +1274,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Visitado",
+          name: "Atrasado Visitado " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1295,7 +1313,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Perdido no contesta Seguimiento sin 5 Seguimientos",
+          name: "Perdido no contesta Seguimiento sin 5 Seguimientos " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1370,7 +1388,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Perdido No contesta sin 4 seguimientos",
+          name: "Perdido No contesta sin 4 seguimientos " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1464,7 +1482,7 @@ export default {
             console.log(error);
           });
       });
-    },
+    }
   },
 
   created() {
