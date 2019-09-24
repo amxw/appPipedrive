@@ -63,7 +63,7 @@ export default {
         
         this.setUsuario(user)
         
-        router.push({name:'agregarApi'})
+        router.push({name:'home'})
 
       } catch (error) {
         console.log(error);
