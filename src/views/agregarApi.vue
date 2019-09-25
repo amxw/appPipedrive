@@ -4,9 +4,7 @@
       <v-card>
         <v-card-text>
           <h3>Agregar Clave Api</h3>
-          <form @submit.prevent="validarToken">
-            <v-text-field v-model="codigo" label="codigo"></v-text-field>
-            <v-btn rounded color="success" type="submit" block dark>Conectar</v-btn>
+            <v-btn rounded color="success" href="https://oauth.pipedrive.com/oauth/authorize?client_id=85a2b836897cbad0&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F" block dark>Conectar</v-btn>
           </form>
         </v-card-text>
       </v-card>
