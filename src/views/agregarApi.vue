@@ -4,8 +4,7 @@
       <v-card>
         <v-card-text>
           <h3>Agregar Clave Api</h3>
-            <v-btn rounded color="success" href="https://oauth.pipedrive.com/oauth/authorize?client_id=85a2b836897cbad0&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F" block dark>Conectar</v-btn>
-          </form>
+            <v-btn rounded color="success" href="https://oauth.pipedrive.com/oauth/authorize?client_id=85a2b836897cbad0&redirect_uri=https%3A%2F%2Fpipedrive-app-1882c.firebaseapp.com%2F" block dark>Conectar</v-btn>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -26,7 +25,7 @@ export default {
   methods: {
     ...mapActions(["agregarApi"]),
 
-    validarToken() {
+   /* validarToken() {
       const self = this;
       const clave = self.codigo;
 
@@ -76,7 +75,7 @@ export default {
             self.$snotify.remove();
           }, 4000);
         });
-    }
+    }*/
   },
   created() {}
 };

@@ -39,9 +39,9 @@ export default {
       };
 
       axios(options).then(function(res){
-        console.log(res);
+        console.log("conectado");
       }).catch(function(error){
-        console.log(error);
+        console.log("no conectado");
       });
 
     }
