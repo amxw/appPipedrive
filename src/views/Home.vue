@@ -18,10 +18,10 @@ export default {
 
     obtenerTokenFinal(id){
 
-      var user = "85a2b836897cbad0:";
+      var user = "85a2b836897cbad0";
       var pass = "3f96b9cdea7b32ffdaa0aed0f26b42327cce1172"
 
-      var credentials = "Basic "+btoa(user+pass);
+      var credentials = "Basic "+btoa(user+':'+pass);
       console.log(credentials);
       const params = {
         "grant_type": "authorization_code",
@@ -39,9 +39,9 @@ export default {
       };
 
       axios(options).then(function(res){
-        console.log("conectado");
+        console.log(res);
       }).catch(function(error){
-        console.log("no conectado");
+        console.log(error);
       });
 
     }

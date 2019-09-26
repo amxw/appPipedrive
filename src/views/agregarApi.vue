@@ -4,7 +4,7 @@
       <v-card>
         <v-card-text>
           <h3>Agregar Clave Api</h3>
-            <v-btn rounded color="success" href="https://oauth.pipedrive.com/oauth/authorize?client_id=85a2b836897cbad0&redirect_uri=https%3A%2F%2Fpipedrive-app-1882c.firebaseapp.com%2F" block dark>Conectar</v-btn>
+            <v-btn rounded color="success" href="https://oauth.pipedrive.com/oauth/authorize?client_id=85a2b836897cbad0&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F" block dark>Conectar</v-btn>
         </v-card-text>
       </v-card>
     </v-flex>
