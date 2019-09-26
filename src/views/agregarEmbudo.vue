@@ -24,6 +24,7 @@
               <v-btn rounded color="success" type="submit" block dark>Agregar</v-btn>
             </form>
           </v-card-text>
+          {{respuesta}}
         </v-card>
       </v-flex>
       <vue-snotify></vue-snotify>
@@ -46,6 +47,7 @@ export default {
       isLoading: false,
       fullPage: true,
       nombre: "",
+      respuesta: "",
       idstage: [],
       tipoEmbudo: "",
       idPipeline: "",
@@ -139,6 +141,7 @@ export default {
 
         if (respuesta == null) {
           console.log("no se a creado crm");
+          self.obteneridStage(self.api);
           self.agregarPipeline(nombre);
           self.agregarPipelineProspeccion();
           self.agregarEmbudoAdmistracionVenta();
@@ -147,6 +150,7 @@ export default {
           //activar funcion para campos persona
           self.agregarCamposPersona(self.api);
         } else {
+          self.obteneridStage(self.api);
           self.agregarPipeline(nombre);
           setTimeout(function() {
             self.onCancelEmbudo();
@@ -155,6 +159,35 @@ export default {
 
         self.nombre = "";
       });
+    },
+    obteneridStage(api) {
+      const self = this;
+      const optionsData = {
+        method: "GET",
+        headers: {
+          Accept: "application/json"
+        },
+        data: "",
+        url:
+          "https://api.pipedrive.com/v1/dealFields?start=0&limit=32&api_token=" +
+          api
+      };
+
+      axios(optionsData)
+        .then(function(res) {
+          const dato = res.data.data;
+
+          function esDato(dato) {
+            return dato.key === "stage_id";
+          }
+
+          const rest = dato.find(esDato);
+
+          self.respuesta = rest.id;
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     },
     //funcion para agregar embudo
     agregarPipeline(nombre) {
@@ -985,6 +1018,7 @@ export default {
     agregarFiltros(api, nombre) {
       this.notification("Creadon Filtros de Embudo " + nombre, "info");
       const estadoid = this.idstage;
+      const self = this;
       const filtros = [
         {
           name: "Atrasado Interesado " + nombre,
@@ -996,7 +1030,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[0][0].id,
                     extra_value: null
@@ -1035,7 +1069,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[2][2].id,
                     extra_value: null
@@ -1074,7 +1108,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[1][1].id,
                     extra_value: null
@@ -1120,7 +1154,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[1][1].id,
                     extra_value: null
@@ -1159,7 +1193,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[0][0].id,
                     extra_value: null
@@ -1205,7 +1239,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[4][4].id,
                     extra_value: null
@@ -1244,7 +1278,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[5][5].id,
                     extra_value: null
@@ -1283,7 +1317,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[3][3].id,
                     extra_value: null
@@ -1341,42 +1375,42 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[0][0].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[1][1].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[2][2].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[3][3].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[4][4].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[5][5].id,
                     extra_value: null
@@ -1416,42 +1450,42 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[0][0].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[1][1].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[2][2].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[3][3].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[4][4].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12462",
+                    field_id: self.respuesta,
                     operator: "=",
                     value: estadoid[5][5].id,
                     extra_value: null
