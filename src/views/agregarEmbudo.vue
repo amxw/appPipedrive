@@ -24,7 +24,6 @@
               <v-btn rounded color="success" type="submit" block dark>Agregar</v-btn>
             </form>
           </v-card-text>
-          {{respuesta}}
         </v-card>
       </v-flex>
       <vue-snotify></vue-snotify>
@@ -47,7 +46,11 @@ export default {
       isLoading: false,
       fullPage: true,
       nombre: "",
-      respuesta: "",
+      etapaStage: "",
+      tratoCreado: "",
+      estadofield: "",
+      AccionesCompletadasField: "",
+      motivoPerdidaField: "",
       idstage: [],
       tipoEmbudo: "",
       idPipeline: "",
@@ -137,9 +140,9 @@ export default {
           return dato.name === "Fecha pactada para Expediente";
         }
 
-        var respuesta = datosarray.find(esDato);
+        var etapaStage = datosarray.find(esDato);
 
-        if (respuesta == null) {
+        if (etapaStage == null) {
           console.log("no se a creado crm");
           self.obteneridStage(self.api);
           self.agregarPipeline(nombre);
@@ -169,7 +172,7 @@ export default {
         },
         data: "",
         url:
-          "https://api.pipedrive.com/v1/dealFields?start=0&limit=32&api_token=" +
+          "https://api.pipedrive.com/v1/dealFields?start=0&api_token=" +
           api
       };
 
@@ -177,13 +180,33 @@ export default {
         .then(function(res) {
           const dato = res.data.data;
 
-          function esDato(dato) {
+          function StageId(dato) {
             return dato.key === "stage_id";
           }
+          function getTradoId(dato){
+            return dato.key === "add_time";
+          }
+          function getEstadoId(dato){
+            return dato.key === "status";
+          }
+          function getAccionesId(dato){
+            return dato.key === "done_activities_count"
+          }
+          function getMotivoPerdida(dato){
+            return dato.key === "lost_reason"
+          }
 
-          const rest = dato.find(esDato);
+          const StageRes = dato.find(StageId);
+          const tratoRes = dato.find(getTradoId);
+          const EstadoRes = dato.find(getEstadoId);
+          const AccionesRes = dato.find(getAccionesId);
+          const motivoPerdidaRes = dato.find(getMotivoPerdida);
 
-          self.respuesta = rest.id;
+          self.etapaStage = StageRes.id;
+          self.tratoCreado = tratoRes.id;
+          self.estadofield = EstadoRes.id;
+          self.AccionesCompletadasField = AccionesRes.id;
+          self.motivoPerdidaField = motivoPerdidaRes.id
         })
         .catch(function(error) {
           console.log(error);
@@ -607,10 +630,10 @@ export default {
     },
     //actualizador de stage
     async actualizarStage(idstage, idOrdden, api) {
-      var params = {
+      var params = await {
         order_nr: idOrdden
       };
-      var options = {
+      var options = await {
         method: "PUT",
         headers: {
           Accept: "application/json"
@@ -620,7 +643,7 @@ export default {
           "https://api.pipedrive.com/v1/stages/" + idstage + "?api_token=" + api
       };
 
-      axios(options)
+       axios(options)
         .then(function(res) {
           console.log("stage actualizado con exito" + res.data.data);
         })
@@ -1030,21 +1053,21 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[0][0].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12464",
+                    field_id: self.tratoCreado,
                     operator: "<",
                     value: "1_week_ago",
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12463",
+                    field_id: self.estadofield,
                     operator: "=",
                     value: "open",
                     extra_value: null
@@ -1069,7 +1092,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[2][2].id,
                     extra_value: null
@@ -1083,7 +1106,7 @@ export default {
                   },
                   {
                     object: "deal",
-                    field_id: "12463",
+                    field_id: self.estadofield,
                     operator: "=",
                     value: "open",
                     extra_value: null
@@ -1108,7 +1131,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[1][1].id,
                     extra_value: null
@@ -1122,14 +1145,14 @@ export default {
                   },
                   {
                     object: "deal",
-                    field_id: "12463",
+                    field_id: self.estadofield,
                     operator: "=",
                     value: "open",
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12478",
+                    field_id: self.AccionesCompletadasField,
                     operator: "<",
                     value: "5",
                     extra_value: null
@@ -1154,7 +1177,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[1][1].id,
                     extra_value: null
@@ -1168,7 +1191,7 @@ export default {
                   },
                   {
                     object: "deal",
-                    field_id: "12463",
+                    field_id: self.estadofield,
                     operator: "=",
                     value: "open",
                     extra_value: null
@@ -1193,28 +1216,28 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[0][0].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12464",
+                    field_id: self.tratoCreado,
                     operator: "<",
                     value: "1_week_ago",
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12463",
+                    field_id: self.estadofield,
                     operator: "=",
                     value: "open",
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12478",
+                    field_id: self.AccionesCompletadasField,
                     operator: "<",
                     value: "4",
                     extra_value: null
@@ -1239,7 +1262,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[4][4].id,
                     extra_value: null
@@ -1253,7 +1276,7 @@ export default {
                   },
                   {
                     object: "deal",
-                    field_id: "12463",
+                    field_id: self.estadofield,
                     operator: "=",
                     value: "open",
                     extra_value: null
@@ -1278,7 +1301,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[5][5].id,
                     extra_value: null
@@ -1292,7 +1315,7 @@ export default {
                   },
                   {
                     object: "deal",
-                    field_id: "12463",
+                    field_id: self.estadofield,
                     operator: "=",
                     value: "open",
                     extra_value: null
@@ -1317,7 +1340,7 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[3][3].id,
                     extra_value: null
@@ -1331,7 +1354,7 @@ export default {
                   },
                   {
                     object: "deal",
-                    field_id: "12463",
+                    field_id: self.estadofield,
                     operator: "=",
                     value: "open",
                     extra_value: null
@@ -1356,14 +1379,14 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: "12474",
+                    field_id: self.motivoPerdidaField,
                     operator: "=",
                     value: "No Responde seguimiento",
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12478",
+                    field_id: self.AccionesCompletadasField,
                     operator: "<",
                     value: "5",
                     extra_value: null
@@ -1375,42 +1398,42 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[0][0].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[1][1].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[2][2].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[3][3].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[4][4].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[5][5].id,
                     extra_value: null
@@ -1431,14 +1454,14 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: "12474",
+                    field_id: self.motivoPerdidaField,
                     operator: "=",
                     value: "No Contesta",
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: "12478",
+                    field_id: self.AccionesCompletadasField,
                     operator: "<",
                     value: "4",
                     extra_value: null
@@ -1450,42 +1473,42 @@ export default {
                 conditions: [
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[0][0].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[1][1].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[2][2].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[3][3].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[4][4].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
-                    field_id: self.respuesta,
+                    field_id: self.etapaStage,
                     operator: "=",
                     value: estadoid[5][5].id,
                     extra_value: null
