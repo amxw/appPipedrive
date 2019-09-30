@@ -69,7 +69,7 @@ export default new Vuex.Store({
       commit('setApi',clave)
       if(!this.state.api == ''){
         console.log('clave agregada con exito')
-        router.push({name: 'home'})
+        router.push({name: 'agregarApi'})
       }else{
         console.log('no se pudo agregar la clave')
       }

@@ -4,7 +4,13 @@
       <v-card>
         <v-card-text>
           <h3>Agregar Clave Api</h3>
-            <v-btn rounded color="success" href="https://oauth.pipedrive.com/oauth/authorize?client_id=85a2b836897cbad0&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F" block dark>Conectar</v-btn>
+          <v-btn
+            rounded
+            color="success"
+            href="https://oauth.pipedrive.com/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauth%2Fpipedrive%2Fcallback&client_id=85a2b836897cbad0"
+            block
+            dark
+          >Conectar</v-btn>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -25,58 +31,41 @@ export default {
   methods: {
     ...mapActions(["agregarApi"]),
 
-   /* validarToken() {
-      const self = this;
-      const clave = self.codigo;
+    obtenerTokenFinal(id) {
+      var user = "85a2b836897cbad0";
+      var pass = "3f96b9cdea7b32ffdaa0aed0f26b42327cce1172";
 
-      const options = {
-        method: "GET",
-        headers: {
-          "content-type": "application/json"
-        },
-        url:
-          "https://api.pipedrive.com/v1/dealFields?start=0&api_token=" + clave
+      var credentials = "Basic " + btoa(user + ":" + pass);
+      const params = {
+        grant_type: "authorization_code",
+        redirect_uri: "http://localhost:8080/auth/pipedrive/callback",
+        code: id
       };
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Authorization": credentials
+        },
+        data: params,
+        url: "https://oauth.pipedrive.com/oauth/token"
+      };
+
       axios(options)
         .then(function(res) {
-          self.validacion = true;
-
-          self.$snotify.success(
-            "Pipedrive conectado con exito",
-            "!! Felicitaciones !!",
-            {
-              timeout: 3000,
-              showProgressBar: false,
-              closeOnClick: false,
-              pauseOnHover: true,
-              titleMaxLength: 500,
-              backdrop: 0.5
-            }
-          );
-          setTimeout(function() {
-            self.$snotify.remove();
-          }, 4000);
-
-          setTimeout(function() {
-            self.agregarApi(clave);
-          }, 4000);
+          console.log(res);
         })
         .catch(function(error) {
-          self.validacion = false;
-          self.$snotify.error("La clave api no es correcta", "¡¡ Error !!", {
-            timeout: 3000,
-            showProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            titleMaxLength: 300,
-            backdrop: 0.5
-          });
-          setTimeout(function() {
-            self.$snotify.remove();
-          }, 4000);
+          console.log(error);
         });
-    }*/
+    }
   },
-  created() {}
+  created() {
+    const token = this.$route.query.code;
+
+    console.log(token);
+    this.obtenerTokenFinal(token);
+    this.agregarApi(token);
+  }
 };
 </script>

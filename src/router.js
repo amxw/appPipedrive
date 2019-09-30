@@ -51,7 +51,7 @@ const router = new Router({
       meta: { requiresAuth: true }
     },
     {
-      path: '/agregar-api',
+      path: '/auth/pipedrive/callback',
       name: 'agregarApi',
       component: () => import(/* webpackChunkName: "about" */ './views/agregarApi.vue'),
       meta: { requiresAuth: true }
