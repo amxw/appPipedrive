@@ -32,33 +32,28 @@ export default {
     ...mapActions(["agregarApi"]),
 
     obtenerTokenFinal(id) {
-      var user = "85a2b836897cbad0";
-      var pass = "3f96b9cdea7b32ffdaa0aed0f26b42327cce1172";
 
-      var credentials = "Basic " + btoa(user + ":" + pass);
       const params = {
         grant_type: "authorization_code",
         redirect_uri: "http://localhost:8080/auth/pipedrive/callback",
-        code: id
+        code: id,
+        client_id: "85a2b836897cbad0",
+        client_secret: "3f96b9cdea7b32ffdaa0aed0f26b42327cce1172"
       };
       const options = {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "Authorization": credentials
         },
         data: params,
         url: "https://oauth.pipedrive.com/oauth/token"
       };
-
-      axios(options)
-        .then(function(res) {
-          console.log(res);
-        })
-        .catch(function(error) {
+        this.$http.post('https://oauth.pipedrive.com/oauth/token',options,params).then(function(res){
+            console.log("conectado")
+        }).catch(function(error){
           console.log(error);
-        });
-    }
+        })
+    },
   },
   created() {
     const token = this.$route.query.code;
