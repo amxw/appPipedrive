@@ -73,9 +73,10 @@ const datos3 = [
         field_type: "enum",
         options: [
             "Organico directo",
-            "Linkeding,facebook",
+            "Linkeding",
+            "facebook",
             "instagram",
-            "google, ads",
+            "google ads",
             "email",
             "valla|muppie|Cerramiento",
             "prensa|Revista|Volante",
