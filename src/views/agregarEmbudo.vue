@@ -140,14 +140,17 @@ export default {
           return dato.name === "Fecha pactada para Expediente";
         }
 
-        var etapaStage = datosarray.find(esDato);
+        var etapaStage = datosarray.length;
 
-        if (etapaStage == null) {
+        if (etapaStage === 32) {
           console.log("no se a creado crm");
           self.obteneridStage(self.api);
-          self.agregarPipeline(nombre);
           self.agregarPipelineProspeccion();
           self.agregarEmbudoAdmistracionVenta();
+          //activar funcion de creacion de embudo
+          setTimeout(function() {
+            self.agregarPipeline(nombre);
+          }, 5000);
           //activar funcion de agregar campos
           self.agregarCamposDeal(self.api);
           //activar funcion para campos persona
@@ -171,9 +174,7 @@ export default {
           Accept: "application/json"
         },
         data: "",
-        url:
-          "https://api.pipedrive.com/v1/dealFields?start=0&api_token=" +
-          api
+        url: "https://api.pipedrive.com/v1/dealFields?start=0&api_token=" + api
       };
 
       axios(optionsData)
@@ -183,17 +184,17 @@ export default {
           function StageId(dato) {
             return dato.key === "stage_id";
           }
-          function getTradoId(dato){
+          function getTradoId(dato) {
             return dato.key === "add_time";
           }
-          function getEstadoId(dato){
+          function getEstadoId(dato) {
             return dato.key === "status";
           }
-          function getAccionesId(dato){
-            return dato.key === "done_activities_count"
+          function getAccionesId(dato) {
+            return dato.key === "done_activities_count";
           }
-          function getMotivoPerdida(dato){
-            return dato.key === "lost_reason"
+          function getMotivoPerdida(dato) {
+            return dato.key === "lost_reason";
           }
 
           const StageRes = dato.find(StageId);
@@ -206,7 +207,7 @@ export default {
           self.tratoCreado = tratoRes.id;
           self.estadofield = EstadoRes.id;
           self.AccionesCompletadasField = AccionesRes.id;
-          self.motivoPerdidaField = motivoPerdidaRes.id
+          self.motivoPerdidaField = motivoPerdidaRes.id;
         })
         .catch(function(error) {
           console.log(error);
@@ -643,7 +644,7 @@ export default {
           "https://api.pipedrive.com/v1/stages/" + idstage + "?api_token=" + api
       };
 
-       axios(options)
+      axios(options)
         .then(function(res) {
           console.log("stage actualizado con exito" + res.data.data);
         })

@@ -184,7 +184,7 @@ const datos4 = [
         options: [
             "Nueva familia | matrimonio",
             "Divorcio",
-            "La proíedad anterion no llena sus nesesidades actuales",
+            "La propiedad anterior no llena sus nesesidades actuales",
             "Progreso economico",
             "Inversion patrimonial",
             "Inversion financiera",
