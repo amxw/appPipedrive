@@ -15,7 +15,7 @@
           <v-card-text>
             <h2>Configuracion de CRM</h2>
             <br />
-            <form @submit.prevent="getDealFields(nombre)">
+            <form @submit.prevent="getDealFields(nombre,api)">
               <v-text-field
                 v-model="nombre"
                 label="Nombre de Embudo (Nombre del Proyecto)"
@@ -113,20 +113,19 @@ export default {
     ...mapActions(["validarToken"]),
 
     //funcion para validar si ya esta creado el crm
-    getDealFields(nombre) {
+    getDealFields(nombre, api) {
       const self = this;
       const arrayCampos = [];
       const options = {
         method: "GET",
         headers: {
-          "content-type": "application/json"
+          Authorization: `Bearer ${api}`
         },
-        url:
-          "https://api.pipedrive.com/v1/dealFields?start=0&api_token=" +
-          this.api
+        url: "https://api-proxy.pipedrive.com/dealFields"
       };
 
       axios(options).then(function(res) {
+        console.log(res);
         arrayCampos.push(res.data.data);
 
         var datosarray = arrayCampos[0];
@@ -139,15 +138,15 @@ export default {
 
         if (respuesta == null) {
           console.log("no se a creado crm");
-          self.agregarPipeline(nombre);
+          self.agregarPipeline(nombre, api);
           self.agregarPipelineProspeccion();
           self.agregarEmbudoAdmistracionVenta();
           //activar funcion de agregar campos
-          self.agregarCamposDeal(self.api);
+          self.agregarCamposDeal(api);
           //activar funcion para campos persona
-          self.agregarCamposPersona(self.api);
+          self.agregarCamposPersona(api);
         } else {
-          self.agregarPipeline(nombre);
+          self.agregarPipeline(nombre, api);
           setTimeout(function() {
             self.onCancelEmbudo();
           }, 8000);
@@ -157,7 +156,7 @@ export default {
       });
     },
     //funcion para agregar embudo
-    agregarPipeline(nombre) {
+    agregarPipeline(nombre, api) {
       //agregar embudo
       const self = this;
       self.notification("Creando Embudo " + nombre, "info");
@@ -170,10 +169,10 @@ export default {
       const options = {
         method: "POST",
         headers: {
-          "content-type": "application/json"
+          Authorization: `Bearer ${api}`
         },
         data: params,
-        url: "https://api.pipedrive.com/v1/pipelines?api_token=" + this.api
+        url: "https://api-proxy.pipedrive.com/pipelines"
       };
       axios(options)
         .then(function(res) {
@@ -181,7 +180,7 @@ export default {
           const idPIpe = res.data.data.id;
           const namePime = res.data.data.name;
 
-          self.agregarStage(idPIpe, self.api, namePime);
+          self.agregarStage(idPIpe, api, namePime);
         })
         .catch(function(error) {
           console.log(error);
@@ -274,10 +273,10 @@ export default {
         const options = {
           method: "POST",
           headers: {
-            "content-type": "application/json"
+            Authorization: `Bearer ${api}`
           },
           data: params,
-          url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+          url: "https://api-proxy.pipedrive.com/stages"
         };
         axios(options)
           .then(function(res) {
@@ -308,10 +307,10 @@ export default {
           const options = {
             method: "POST",
             headers: {
-              "content-type": "application/json"
+              Authorization: `Bearer ${api}`
             },
             data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+            url: "https://api-proxy.pipedrive.com/stages"
           };
           axios(options)
             .then(function(res) {
@@ -344,10 +343,10 @@ export default {
           const options = {
             method: "POST",
             headers: {
-              "content-type": "application/json"
+              Authorization: `Bearer ${api}`
             },
             data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+            url: "https://api-proxy.pipedrive.com/stages"
           };
           axios(options)
             .then(function(res) {
@@ -380,10 +379,10 @@ export default {
           const options = {
             method: "POST",
             headers: {
-              "content-type": "application/json"
+             Authorization: `Bearer ${api}`
             },
             data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+            url: "https://api-proxy.pipedrive.com/stages"
           };
           axios(options)
             .then(function(res) {
@@ -416,10 +415,10 @@ export default {
           const options = {
             method: "POST",
             headers: {
-              "content-type": "application/json"
+              Authorization: `Bearer ${api}`
             },
             data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+            url: "https://api-proxy.pipedrive.com/stages"
           };
           axios(options)
             .then(function(res) {
@@ -452,10 +451,10 @@ export default {
           const options = {
             method: "POST",
             headers: {
-              "content-type": "application/json"
+             Authorization: `Bearer ${api}`
             },
             data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+            url: "https://api-proxy.pipedrive.com/stages"
           };
           axios(options)
             .then(function(res) {
@@ -1469,10 +1468,10 @@ export default {
         const options = {
           method: "POST",
           headers: {
-            "content-type": "application/json"
+             Authorization: `Bearer ${api}`
           },
           data: params,
-          url: "https://api.pipedrive.com/v1/filters?api_token=" + api
+          url: "https://api-proxy.pipedrive.com/filters"
         };
         axios(options)
           .then(function(res) {
