@@ -4,9 +4,9 @@
     <notifications position="top center" class="notificacion" width="400px" group="foo" />
     <v-content>
       <v-container>
-        
-       
-        <router-view />
+         <v-slide-y-transition mode="out-in">
+          <router-view/>
+        </v-slide-y-transition>
       </v-container>
     </v-content>
    <v-footer

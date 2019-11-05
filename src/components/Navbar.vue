@@ -64,6 +64,11 @@ export default {
           to: { name: "agregarPipeline" }
         },
         {
+          title: "Agregar Campos de Fecha",
+          icon: "fab fa-slack-hash",
+          to: { name: "camposFecha" }
+        },
+        {
           title: "Agregar API",
           icon: "fab fa-slack-hash",
           to: { name: "agregarApi" }

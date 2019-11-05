@@ -51,6 +51,12 @@ const router = new Router({
       meta: { requiresAuth: true }
     },
     {
+      path: '/agregar-campos-fecha',
+      name: 'camposFecha',
+      component: () => import(/* webpackChunkName: "about" */ './views/camposFecha.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/agregar-api',
       name: 'agregarApi',
       component: () => import(/* webpackChunkName: "about" */ './views/agregarApi.vue'),
