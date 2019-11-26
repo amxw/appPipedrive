@@ -33,7 +33,7 @@
 <script>
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
-import { datos1, datos2, datos3, datos4 } from "@/camposDeal";
+import { datos1, datos2, datos3, datos4, datos5, datos6, datos7, datos8 } from "@/camposDeal";
 import { datoPersona1, datoPersona2, datoPersona3 } from "@/camposPerson";
 import { mapState, mapActions } from "vuex";
 import router from "@/router";
@@ -142,7 +142,14 @@ export default {
 
         var etapaStage = datosarray.length;
 
-        if (etapaStage === 32) {
+
+        
+
+        let campocreado = datosarray.find(esDato);
+
+        console.log(campocreado);
+  //etapaStage === 32
+       if (etapaStage === 32 || campocreado.name != "Fecha pactada para Expediente") {
           console.log("no se a creado crm");
           self.obteneridStage(self.api);
           self.agregarPipelineProspeccion();
@@ -152,9 +159,16 @@ export default {
             self.agregarPipeline(nombre);
           }, 5000);
           //activar funcion de agregar campos
-          self.agregarCamposDeal(self.api);
+          setTimeout(function(){
+            self.agregarCamposDeal(self.api);
+          },7000);
+          
+
           //activar funcion para campos persona
-          self.agregarCamposPersona(self.api);
+          setTimeout(function(){
+            self.agregarCamposPersona(self.api);
+          },25000);
+          
         } else {
           self.obteneridStage(self.api);
           self.agregarPipeline(nombre);
@@ -318,7 +332,7 @@ export default {
       ];
       const self = this;
       const stageid = this.idstage;
-      valores1.forEach(function(e) {
+      valores1.map(function(e) {
         const params = {
           name: e.name,
           pipeline_id: e.pipeline_id,
@@ -352,7 +366,7 @@ export default {
       });
 
       setTimeout(function() {
-        valores2.forEach(function(e) {
+        valores2.map(function(e) {
           const params = {
             name: e.name,
             pipeline_id: e.pipeline_id,
@@ -387,7 +401,7 @@ export default {
       }, 1000);
 
       setTimeout(function() {
-        valores3.forEach(function(e) {
+        valores3.map(function(e) {
           const self = this;
           const params = {
             name: e.name,
@@ -423,7 +437,7 @@ export default {
       }, 2000);
 
       setTimeout(function() {
-        valores4.forEach(function(e) {
+        valores4.map(function(e) {
           const self = this;
           const params = {
             name: e.name,
@@ -459,7 +473,7 @@ export default {
       }, 3000);
 
       setTimeout(function() {
-        valores5.forEach(function(e) {
+        valores5.map(function(e) {
           const self = this;
           const params = {
             name: e.name,
@@ -495,7 +509,7 @@ export default {
       }, 4000);
 
       setTimeout(function() {
-        valores6.forEach(function(e) {
+        valores6.map(function(e) {
           const self = this;
           const params = {
             name: e.name,
@@ -596,7 +610,7 @@ export default {
 
       const self = this;
       const stageid = this.idstage;
-      valores1.forEach(function(e) {
+      valores1.map(function(e) {
         const params = {
           name: e.name,
           pipeline_id: e.pipeline_id,
@@ -732,7 +746,7 @@ export default {
 
       const self = this;
       setTimeout(function() {
-        valores1.forEach(function(e) {
+        valores1.map(function(e) {
           const params = {
             name: e.name,
             pipeline_id: e.pipeline_id,
@@ -755,7 +769,7 @@ export default {
       }, 1000);
 
       setTimeout(function() {
-        valores2.forEach(function(e) {
+        valores2.map(function(e) {
           const params = {
             name: e.name,
             pipeline_id: e.pipeline_id,
@@ -778,7 +792,7 @@ export default {
       }, 2000);
 
       setTimeout(function() {
-        valores3.forEach(function(e) {
+        valores3.map(function(e) {
           const params = {
             name: e.name,
             pipeline_id: e.pipeline_id,
@@ -801,7 +815,7 @@ export default {
       }, 3000);
 
       setTimeout(function() {
-        valores4.forEach(function(e) {
+        valores4.map(function(e) {
           const params = {
             name: e.name,
             pipeline_id: e.pipeline_id,
@@ -840,18 +854,21 @@ export default {
     },
     //Agregar campos a tratos
     agregarCamposDeal(api) {
-      const campos1 = datos1;
-      const campos2 = datos2;
-      const campos3 = datos3;
-      const campos4 = datos4;
+      let campos1 = datos1;
+      let campos2 = datos2;
+      let campos3 = datos3;
+      let campos4 = datos4;
+      let campos5 = datos5;
+      let campos6 = datos6;
+      let campos7 = datos7;
+      let campos8 = datos8;
 
       setTimeout(function() {
-        campos1.forEach(function(e) {
+        campos1.map(function(e) {
           const self = this;
           const params = {
             name: e.name,
-            field_type: e.field_type,
-            options: e.options
+            field_type: e.field_type
           };
           const options = {
             method: "POST",
@@ -873,12 +890,11 @@ export default {
 
       setTimeout(function() {
         const the = this;
-        campos2.forEach(function(e) {
+        campos2.map(function(e) {
           const self = this;
           const params = {
             name: e.name,
-            field_type: e.field_type,
-            options: e.options
+            field_type: e.field_type
           };
           const options = {
             method: "POST",
@@ -900,7 +916,7 @@ export default {
       }, 6000);
 
       setTimeout(function() {
-        campos3.forEach(function(e) {
+        campos3.map(function(e) {
           const self = this;
           const params = {
             name: e.name,
@@ -926,7 +942,31 @@ export default {
       }, 9000);
 
       setTimeout(function() {
-        campos4.forEach(function(e) {
+        campos4.map(function(e) {
+          const self = this;
+          const params = {
+            name: e.name,
+            field_type: e.field_type
+          };
+          const options = {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            data: params,
+            url: "https://api.pipedrive.com/v1/dealFields?api_token=" + api
+          };
+          axios(options)
+            .then(function(res) {
+              console.log("campo creado con exito" + res);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        });
+      }, 12000);
+      setTimeout(function() {
+        campos5.map(function(e) {
           const self = this;
           const params = {
             name: e.name,
@@ -949,7 +989,82 @@ export default {
               console.log(error);
             });
         });
-      }, 12000);
+      }, 15000);
+      setTimeout(function() {
+        campos6.map(function(e) {
+          const self = this;
+          const params = {
+            name: e.name,
+            field_type: e.field_type,
+            options: e.options
+          };
+          const options = {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            data: params,
+            url: "https://api.pipedrive.com/v1/dealFields?api_token=" + api
+          };
+          axios(options)
+            .then(function(res) {
+              console.log("campo creado con exito" + res);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        });
+      }, 18000);
+      setTimeout(function() {
+        campos7.map(function(e) {
+          const self = this;
+          const params = {
+            name: e.name,
+            field_type: e.field_type,
+            options: e.options
+          };
+          const options = {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            data: params,
+            url: "https://api.pipedrive.com/v1/dealFields?api_token=" + api
+          };
+          axios(options)
+            .then(function(res) {
+              console.log("campo creado con exito" + res);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        });
+      }, 21000);
+      setTimeout(function() {
+        campos8.map(function(e) {
+          const self = this;
+          const params = {
+            name: e.name,
+            field_type: e.field_type,
+            options: e.options
+          };
+          const options = {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            data: params,
+            url: "https://api.pipedrive.com/v1/dealFields?api_token=" + api
+          };
+          axios(options)
+            .then(function(res) {
+              console.log("campo creado con exito" + res);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        });
+      }, 24000);
     },
     //agregar campos a persona
     agregarCamposPersona(api) {
@@ -959,7 +1074,7 @@ export default {
       const self = this;
 
       setTimeout(function() {
-        persona1.forEach(function(e) {
+        persona1.map(function(e) {
           const self = this;
           const params = {
             name: e.name,
@@ -986,7 +1101,7 @@ export default {
       }, 15000);
 
       setTimeout(function() {
-        persona2.forEach(function(e) {
+        persona2.map(function(e) {
           const self = this;
           const params = {
             name: e.name,
@@ -1012,7 +1127,7 @@ export default {
       }, 18000);
 
       setTimeout(function() {
-        persona3.forEach(function(e) {
+        persona3.map(function(e) {
           const params = {
             name: e.name,
             field_type: e.field_type,
@@ -1521,7 +1636,7 @@ export default {
           type: "deals"
         }
       ];
-      filtros.forEach(function(e) {
+      filtros.map(function(e) {
         const self = this;
         const params = e;
         const options = {

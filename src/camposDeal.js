@@ -4,23 +4,12 @@ const datos1 = [
         field_type: "date",
     },
     {
-        name: "Fecha Limite para Reservar",
-        field_type: "date",
+        name: "Campaña",
+        field_type: "varchar_auto"
     },
     {
-        name: "Proceso Financiamiento",
-        field_type: "enum",
-        options: [
-            "Suspendido Análisis",
-            "Suspensión Técnica",
-            "Suspendido",
-            "Resguardo",
-            "Resolución Bancaria",
-            "Ventas al Contado",
-            "Escrituras Contado",
-            "Aprobado Análisis",
-            "Aprobado Tecnico"
-        ]
+        name: "Fecha Limite para Reservar",
+        field_type: "date",
     },
     {
         name: "Contrato",
@@ -65,9 +54,21 @@ const datos2 = [
 
 const datos3 = [
     {
-        name: "Campaña",
-        field_type: "varchar_auto"
+        name: "Proceso Financiamiento",
+        field_type: "enum",
+        options: [
+            "Suspendido Análisis",
+            "Suspensión Técnica",
+            "Suspendido",
+            "Resguardo",
+            "Resolución Bancaria",
+            "Ventas al Contado",
+            "Escrituras Contado",
+            "Aprobado Análisis",
+            "Aprobado Tecnico"
+        ]
     },
+
     {
         name: "Fuente",
         field_type: "enum",
@@ -110,6 +111,9 @@ const datos3 = [
             "5 o más"
         ]
     },
+]
+const datos4 = [
+
     {
         name: "¿Para cuándo desea comprar su casa?",
         field_type: "enum",
@@ -120,9 +124,6 @@ const datos3 = [
             "9 meses o más"
         ]
     },
-]
-
-const datos4 = [
     {
         name: "¿En qué rango de precio quiere comprar?",
         field_type: "enum",
@@ -133,6 +134,8 @@ const datos4 = [
             "Q1,000,001 o más"
         ]
     },
+]
+const datos5 = [
     {
         name: "¿Cuál es su interés de compra?",
         field_type: "enum",
@@ -170,14 +173,8 @@ const datos4 = [
             "Más de Q9000"
         ]
     },
-    {
-        name: "¿Quién más toma la decisión de compra?",
-        field_type: "text"
-    },
-    {
-        name: "Term",
-        field_type: "varchar_auto"
-    },
+]
+const datos6 = [
     {
         name: "¿Por que quiere comprar?",
         field_type: "enum",
@@ -200,10 +197,8 @@ const datos4 = [
             "no sabe / no responder"
         ]
     },
-    {
-        name: "¿Cual es la cuota mensual presupuestado?",
-        field_type: "monetary"
-    },
+]
+const datos7 = [
     {
         name: "¿Quienes influyen en la toma de decisión?",
         field_type: "set",
@@ -216,10 +211,6 @@ const datos4 = [
         ]
     },
     {
-        name: "observación de prospección",
-        field_type: "text",
-    },
-    {
         name: "producto interesado",
         field_type: "enum",
         options: [
@@ -227,6 +218,49 @@ const datos4 = [
             "comercio",
             "vivienda"
         ]
-    }
+    },
 ]
-export { datos1, datos2, datos3, datos4 }
+
+const datos8 = [
+
+    {
+        name: "¿Quién más toma la decisión de compra?",
+        field_type: "text"
+    },
+    {
+        name: "Term",
+        field_type: "varchar_auto"
+    },
+
+    {
+        name: "¿Cual es la cuota mensual presupuestado?",
+        field_type: "monetary"
+    },
+
+    {
+        name: "observación de prospección",
+        field_type: "text",
+    },
+
+    {
+        name: "Fecha de Contactado",
+        field_type: "date",
+    },
+    {
+        name: "Fecha de Cita",
+        field_type: "date",
+    },
+    {
+        name: "Fecha de Visita",
+        field_type: "date",
+    },
+    {
+        name: "Fecha de Negociación",
+        field_type: "date",
+    },
+    {
+        name: "Fecha de Reserva",
+        field_type: "date",
+    },
+]
+export { datos1, datos2, datos3, datos4, datos5, datos6, datos7, datos8 }
