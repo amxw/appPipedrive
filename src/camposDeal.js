@@ -27,9 +27,9 @@ const datos1 = [
         name: "Banco",
         field_type: "varchar_auto"
     },
-]
 
-const datos2 = [
+
+
     {
         name: "Financiamiento en años",
         field_type: "double"
@@ -50,9 +50,8 @@ const datos2 = [
         name: "Contenido",
         field_type: "varchar_auto"
     },
-]
 
-const datos3 = [
+
     {
         name: "Proceso Financiamiento",
         field_type: "enum",
@@ -75,12 +74,12 @@ const datos3 = [
         options: [
             "Organico directo",
             "Linkeding",
-            "facebook",
-            "instagram",
-            "google ads",
-            "email",
-            "valla|muppie|Cerramiento",
-            "prensa|Revista|Volante",
+            "Facebook",
+            "Instagram",
+            "Google ads",
+            "Email",
+            "Valla|Muppie|Cerramiento",
+            "Prensa|Revista|Volante",
             "Referido",
             "Cartera",
             "Corredor inmobiliario",
@@ -111,8 +110,8 @@ const datos3 = [
             "5 o más"
         ]
     },
-]
-const datos4 = [
+
+
 
     {
         name: "¿Para cuándo desea comprar su casa?",
@@ -134,8 +133,8 @@ const datos4 = [
             "Q1,000,001 o más"
         ]
     },
-]
-const datos5 = [
+
+
     {
         name: "¿Cuál es su interés de compra?",
         field_type: "enum",
@@ -173,8 +172,8 @@ const datos5 = [
             "Más de Q9000"
         ]
     },
-]
-const datos6 = [
+
+
     {
         name: "¿Por que quiere comprar?",
         field_type: "enum",
@@ -197,8 +196,8 @@ const datos6 = [
             "no sabe / no responder"
         ]
     },
-]
-const datos7 = [
+
+
     {
         name: "¿Quienes influyen en la toma de decisión?",
         field_type: "set",
@@ -219,10 +218,6 @@ const datos7 = [
             "vivienda"
         ]
     },
-]
-
-const datos8 = [
-
     {
         name: "¿Quién más toma la decisión de compra?",
         field_type: "text"
@@ -263,4 +258,4 @@ const datos8 = [
         field_type: "date",
     },
 ]
-export { datos1, datos2, datos3, datos4, datos5, datos6, datos7, datos8 }
+export { datos1 }

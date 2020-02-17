@@ -33,8 +33,8 @@
 <script>
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
-import { datos1, datos2, datos3, datos4, datos5, datos6, datos7, datos8 } from "@/camposDeal";
-import { datoPersona1, datoPersona2, datoPersona3 } from "@/camposPerson";
+import { datos1 } from "@/camposDeal";
+import { datoPersona1 } from "@/camposPerson";
 import { mapState, mapActions } from "vuex";
 import router from "@/router";
 import axios from "axios";
@@ -98,10 +98,29 @@ export default {
         self.$snotify.remove();
       }, 4000);
     },
+    onCancelProyecto() {
+      const self = this;
+      this.isLoading = false;
+      self.idstage = [];
+      self.$snotify.success("Embudo creado con exito", "¡¡Felicitaciones!!", {
+        timeout: 3000,
+        showProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        titleMaxLength: 300,
+        backdrop: 0.5
+      });
+      setTimeout(function() {
+        self.$snotify.remove();
+      }, 4000);
+    },
     onCancelEmbudo() {
       const self = this;
       this.isLoading = false;
       self.idstage = [];
+      self.etapaStage = "";
+      self.tratoCreado = "";
+      self.estadofield = "";
       self.$snotify.success("Embudo creado con exito", "¡¡Felicitaciones!!", {
         timeout: 3000,
         showProgressBar: false,
@@ -133,48 +152,39 @@ export default {
 
       axios(options).then(function(res) {
         arrayCampos.push(res.data.data);
-
+        let dato = res.data.data;
         var datosarray = arrayCampos[0];
 
         function esDato(dato) {
-          return dato.name === "Fecha pactada para Expediente";
+          return dato.name === "Campaña";
         }
 
         var etapaStage = datosarray.length;
-
-
-        
-
         let campocreado = datosarray.find(esDato);
 
-        console.log(campocreado);
-  //etapaStage === 32
-       if (etapaStage === 32 || campocreado.name != "Fecha pactada para Expediente") {
+        //etapaStage === 32
+        if (!campocreado) {
           console.log("no se a creado crm");
-          self.obteneridStage(self.api);
+          setTimeout(function() {
+            self.obteneridStage(self.api);
+          }, 5000);
           self.agregarPipelineProspeccion();
           self.agregarEmbudoAdmistracionVenta();
           //activar funcion de creacion de embudo
           setTimeout(function() {
             self.agregarPipeline(nombre);
-          }, 5000);
-          //activar funcion de agregar campos
-          setTimeout(function(){
-            self.agregarCamposDeal(self.api);
-          },7000);
-          
+          }, 3000);
 
+          //activar funcion de agregar campos
+          self.agregarCamposDeal(self.api);
           //activar funcion para campos persona
-          setTimeout(function(){
-            self.agregarCamposPersona(self.api);
-          },25000);
-          
+          self.agregarCamposPersona(self.api);
         } else {
           self.obteneridStage(self.api);
           self.agregarPipeline(nombre);
           setTimeout(function() {
-            self.onCancelEmbudo();
-          }, 8000);
+            self.onCancelProyecto();
+          }, 5000);
         }
 
         self.nombre = "";
@@ -264,7 +274,7 @@ export default {
     //creacion de stage para el embudo creado
 
     agregarStage(id, api, nombre) {
-      const valores1 = [
+      const valores = [
         {
           name: "Interesado",
           pipeline_id: id,
@@ -273,9 +283,7 @@ export default {
           rotten_flag: true,
           rotten_days: 3,
           order_nr: 1
-        }
-      ];
-      const valores2 = [
+        },
         {
           name: "Contactado",
           pipeline_id: id,
@@ -284,9 +292,7 @@ export default {
           rotten_flag: true,
           rotten_days: 3,
           order_nr: 2
-        }
-      ];
-      const valores3 = [
+        },
         {
           name: "Cita agendada",
           pipeline_id: id,
@@ -295,9 +301,7 @@ export default {
           rotten_flag: true,
           rotten_days: 5,
           order_nr: 3
-        }
-      ];
-      const valores4 = [
+        },
         {
           name: "Visitado",
           pipeline_id: id,
@@ -306,9 +310,7 @@ export default {
           rotten_flag: true,
           rotten_days: 15,
           order_nr: 4
-        }
-      ];
-      const valores5 = [
+        },
         {
           name: "Negociación",
           pipeline_id: id,
@@ -317,9 +319,7 @@ export default {
           rotten_flag: true,
           rotten_days: 7,
           order_nr: 5
-        }
-      ];
-      const valores6 = [
+        },
         {
           name: "Reserva",
           pipeline_id: id,
@@ -332,221 +332,78 @@ export default {
       ];
       const self = this;
       const stageid = this.idstage;
-      valores1.map(function(e) {
-        const params = {
-          name: e.name,
-          pipeline_id: e.pipeline_id,
-          active_flag: e.active_flag,
-          deal_probability: e.deal_probability,
-          rotten_flag: e.rotten_flag,
-          rotten_days: e.rotten_days,
-          order_nr: e.order_nr
-        };
-        const options = {
-          method: "POST",
-          headers: {
-            "content-type": "application/json"
-          },
-          data: params,
-          url: "https://api.pipedrive.com/v1/stages?api_token=" + api
-        };
-        axios(options)
-          .then(function(res) {
-            //this.idPipeline = res.data.data.id;
-            console.log("stage creado con exito " + res.data.data.name);
 
-            var stageVar1 = {
-              0: { id: res.data.data.id, name: res.data.data.name }
-            };
-            stageid.push(stageVar1);
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+      valores.forEach(function(e, index, collection) {
+        setTimeout(function() {
+          const params = {
+            name: e.name,
+            pipeline_id: e.pipeline_id,
+            active_flag: e.active_flag,
+            deal_probability: e.deal_probability,
+            rotten_flag: e.rotten_flag,
+            rotten_days: e.rotten_days,
+            order_nr: e.order_nr
+          };
+          const options = {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            data: params,
+            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+          };
+          axios(options)
+            .then(function(res) {
+              //this.idPipeline = res.data.data.id;
+              console.log("stage creado con exito " + res.data.data.name);
+
+              var stageVar1 = {
+                id: res.data.data.id,
+                name: res.data.data.name
+              };
+              stageid.push(stageVar1);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        }, index * 500);
       });
 
-      setTimeout(function() {
-        valores2.map(function(e) {
-          const params = {
-            name: e.name,
-            pipeline_id: e.pipeline_id,
-            active_flag: e.active_flag,
-            deal_probability: e.deal_probability,
-            rotten_flag: e.rotten_flag,
-            rotten_days: e.rotten_days,
-            order_nr: e.order_nr
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              //this.idPipeline = res.data.data.id;
-              console.log("stage creado con exito " + res.data.data.name);
+      const numeroPipeline = Promise.resolve(self.getPipielines(api));
+      numeroPipeline.then(function(value) {
+        console.log(value);
+        var cont = parseInt(value) - parseInt(3);
+        setTimeout(function() {
+          self.agregarFiltros(api, nombre, cont);
+        }, 3000);
+      });
+    },
+    //axios para encotrar pipelnes
 
-              var stageVar2 = {
-                1: { id: res.data.data.id, name: res.data.data.name }
-              };
-              stageid.push(stageVar2);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
+    getPipielines(api) {
+      const self = this;
+      const arrayCampos = [];
+      const pipelines = 0;
+
+      let configuracion = {
+        method: "GET",
+        headers: {
+          Accept: "application/json"
+        },
+        url: "https://api.pipedrive.com/v1/pipelines?api_token=" + api
+      };
+
+      const pipeline = axios(configuracion)
+        .then(function(res) {
+          arrayCampos.push(res.data.data);
+          var datosarray = arrayCampos[0];
+          return datosarray.length;
+        })
+        .catch(function(error) {
+          console.log(error);
         });
-      }, 1000);
 
-      setTimeout(function() {
-        valores3.map(function(e) {
-          const self = this;
-          const params = {
-            name: e.name,
-            pipeline_id: e.pipeline_id,
-            active_flag: e.active_flag,
-            deal_probability: e.deal_probability,
-            rotten_flag: e.rotten_flag,
-            rotten_days: e.rotten_days,
-            order_nr: e.order_nr
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              //this.idPipeline = res.data.data.id;
-              console.log("stage creado con exito " + res.data.data.name);
-
-              var stageVar3 = {
-                2: { id: res.data.data.id, name: res.data.data.name }
-              };
-              stageid.push(stageVar3);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-      }, 2000);
-
-      setTimeout(function() {
-        valores4.map(function(e) {
-          const self = this;
-          const params = {
-            name: e.name,
-            pipeline_id: e.pipeline_id,
-            active_flag: e.active_flag,
-            deal_probability: e.deal_probability,
-            rotten_flag: e.rotten_flag,
-            rotten_days: e.rotten_days,
-            order_nr: e.order_nr
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              //this.idPipeline = res.data.data.id;
-              console.log("stage creado con exito " + res.data.data.name);
-
-              var stageVar4 = {
-                3: { id: res.data.data.id, name: res.data.data.name }
-              };
-              stageid.push(stageVar4);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-      }, 3000);
-
-      setTimeout(function() {
-        valores5.map(function(e) {
-          const self = this;
-          const params = {
-            name: e.name,
-            pipeline_id: e.pipeline_id,
-            active_flag: e.active_flag,
-            deal_probability: e.deal_probability,
-            rotten_flag: e.rotten_flag,
-            rotten_days: e.rotten_days,
-            order_nr: e.order_nr
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              //this.idPipeline = res.data.data.id;
-              console.log("stage creado con exito " + res.data.data.name);
-
-              var stageVar5 = {
-                4: { id: res.data.data.id, name: res.data.data.name }
-              };
-              stageid.push(stageVar5);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-      }, 4000);
-
-      setTimeout(function() {
-        valores6.map(function(e) {
-          const self = this;
-          const params = {
-            name: e.name,
-            pipeline_id: e.pipeline_id,
-            active_flag: e.active_flag,
-            deal_probability: e.deal_probability,
-            rotten_flag: e.rotten_flag,
-            rotten_days: e.rotten_days,
-            order_nr: e.order_nr
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              //this.idPipeline = res.data.data.id;
-              console.log("stage creado con exito " + res.data.data.name);
-
-              var stageVar6 = {
-                5: { id: res.data.data.id, name: res.data.data.name }
-              };
-              stageid.push(stageVar6);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-      }, 5000);
-
-      setTimeout(function() {
-        self.agregarFiltros(api, nombre);
-      }, 6000);
+      return pipeline;
     },
     //pipeline Propeccion
     agregarPipelineProspeccion() {
@@ -578,7 +435,7 @@ export default {
     },
     //stage Prospeccion
     agregarStageProspeccion(id, api) {
-      const valores1 = [
+      const valores = [
         {
           name: "Interesado",
           pipeline_id: id,
@@ -610,61 +467,38 @@ export default {
 
       const self = this;
       const stageid = this.idstage;
-      valores1.map(function(e) {
-        const params = {
-          name: e.name,
-          pipeline_id: e.pipeline_id,
-          active_flag: e.active_flag,
-          deal_probability: e.deal_probability,
-          rotten_flag: e.rotten_flag,
-          rotten_days: e.rotten_days,
-          order_nr: e.order_nr
-        };
-        const options = {
-          method: "POST",
-          headers: {
-            Accept: "application/json"
-          },
-          data: params,
-          url: "https://api.pipedrive.com/v1/stages?api_token=" + api
-        };
-        axios(options)
-          .then(function(res) {
-            //this.idPipeline = res.data.data.id;
-            console.log("stage creado con exito " + res.data.data.name);
-            var idstage = res.data.data.id;
-            var idOrdden = e.order_nr;
-            var api = self.api;
-            console.log(idstage, idOrdden, api);
-            self.actualizarStage(idstage, idOrdden, api);
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+      valores.forEach(function(e, index, collection) {
+        setTimeout(function() {
+          const params = {
+            name: e.name,
+            pipeline_id: e.pipeline_id,
+            active_flag: e.active_flag,
+            deal_probability: e.deal_probability,
+            rotten_flag: e.rotten_flag,
+            rotten_days: e.rotten_days,
+            order_nr: e.order_nr
+          };
+          const options = {
+            method: "POST",
+            headers: {
+              Accept: "application/json"
+            },
+            data: params,
+            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
+          };
+          axios(options)
+            .then(function(res) {
+              //this.idPipeline = res.data.data.id;
+              console.log("stage creado con exito " + res.data.data.name);
+              var idstage = res.data.data.id;
+              var idOrdden = e.order_nr;
+              var api = self.api;
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        }, index * 500);
       });
-    },
-    //actualizador de stage
-    async actualizarStage(idstage, idOrdden, api) {
-      var params = await {
-        order_nr: idOrdden
-      };
-      var options = await {
-        method: "PUT",
-        headers: {
-          Accept: "application/json"
-        },
-        data: params,
-        url:
-          "https://api.pipedrive.com/v1/stages/" + idstage + "?api_token=" + api
-      };
-
-      axios(options)
-        .then(function(res) {
-          console.log("stage actualizado con exito" + res.data.data);
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
     },
     //pipeline de administracion ventas
     agregarEmbudoAdmistracionVenta() {
@@ -699,7 +533,7 @@ export default {
     },
     //stage administracion de ventas
     agregarStageAdVentas(id, api) {
-      const valores1 = [
+      const valores = [
         {
           name: "Interesado",
           pipeline_id: id,
@@ -708,9 +542,7 @@ export default {
           rotten_flag: true,
           rotten_days: 3,
           order_nr: 1
-        }
-      ];
-      const valores2 = [
+        },
         {
           name: "Proceso de Credito",
           pipeline_id: id,
@@ -719,9 +551,7 @@ export default {
           rotten_flag: true,
           rotten_days: 3,
           order_nr: 2
-        }
-      ];
-      const valores3 = [
+        },
         {
           name: "Listo para Escriturar",
           pipeline_id: id,
@@ -730,9 +560,7 @@ export default {
           rotten_flag: true,
           rotten_days: 5,
           order_nr: 3
-        }
-      ];
-      const valores4 = [
+        },
         {
           name: "Listo para Entregar",
           pipeline_id: id,
@@ -745,8 +573,8 @@ export default {
       ];
 
       const self = this;
-      setTimeout(function() {
-        valores1.map(function(e) {
+      valores.forEach(function(e, index, collection) {
+        setTimeout(function() {
           const params = {
             name: e.name,
             pipeline_id: e.pipeline_id,
@@ -765,77 +593,8 @@ export default {
             url: "https://api.pipedrive.com/v1/stages?api_token=" + api
           };
           self.axioStage(options, e.order_nr);
-        });
-      }, 1000);
-
-      setTimeout(function() {
-        valores2.map(function(e) {
-          const params = {
-            name: e.name,
-            pipeline_id: e.pipeline_id,
-            active_flag: e.active_flag,
-            deal_probability: e.deal_probability,
-            rotten_flag: e.rotten_flag,
-            rotten_days: e.rotten_days,
-            order_nr: e.order_nr
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              Accept: "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
-          };
-          self.axioStage(options, e.order_nr);
-        });
-      }, 2000);
-
-      setTimeout(function() {
-        valores3.map(function(e) {
-          const params = {
-            name: e.name,
-            pipeline_id: e.pipeline_id,
-            active_flag: e.active_flag,
-            deal_probability: e.deal_probability,
-            rotten_flag: e.rotten_flag,
-            rotten_days: e.rotten_days,
-            order_nr: e.order_nr
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              Accept: "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
-          };
-          self.axioStage(options, e.order_nr);
-        });
-      }, 3000);
-
-      setTimeout(function() {
-        valores4.map(function(e) {
-          const params = {
-            name: e.name,
-            pipeline_id: e.pipeline_id,
-            active_flag: e.active_flag,
-            deal_probability: e.deal_probability,
-            rotten_flag: e.rotten_flag,
-            rotten_days: e.rotten_days,
-            order_nr: e.order_nr
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              Accept: "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/stages?api_token=" + api
-          };
-          self.axioStage(options, e.order_nr);
-        });
-      }, 4000);
+        }, index * 500);
+      });
     },
     //funccion axios para mandar data
     axioStage(options, orden) {
@@ -843,10 +602,10 @@ export default {
       axios(options)
         .then(function(res) {
           //this.idPipeline = res.data.data.id;
+          console.log("stage creado con exito " + res.data.data.name);
           var idstage = res.data.data.id;
           var idOrdden = orden;
           var api = self.api;
-          self.actualizarStage(idstage, idOrdden, api);
         })
         .catch(function(error) {
           console.log(error);
@@ -855,69 +614,9 @@ export default {
     //Agregar campos a tratos
     agregarCamposDeal(api) {
       let campos1 = datos1;
-      let campos2 = datos2;
-      let campos3 = datos3;
-      let campos4 = datos4;
-      let campos5 = datos5;
-      let campos6 = datos6;
-      let campos7 = datos7;
-      let campos8 = datos8;
-
-      setTimeout(function() {
-        campos1.map(function(e) {
-          const self = this;
-          const params = {
-            name: e.name,
-            field_type: e.field_type
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/dealFields?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              console.log("campo creado con exito" + res);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-      }, 3000);
-
-      setTimeout(function() {
-        const the = this;
-        campos2.map(function(e) {
-          const self = this;
-          const params = {
-            name: e.name,
-            field_type: e.field_type
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/dealFields?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              console.log("campo creado con exito" + res);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-        the.notification("Creando Campos Personalizados Negocios", "info");
-      }, 6000);
-
-      setTimeout(function() {
-        campos3.map(function(e) {
-          const self = this;
+      const self = this;
+      campos1.forEach(function(e, index, collection) {
+        setTimeout(function() {
           const params = {
             name: e.name,
             field_type: e.field_type,
@@ -938,143 +637,20 @@ export default {
             .catch(function(error) {
               console.log(error);
             });
-        });
-      }, 9000);
-
+        }, index * 1000);
+      });
       setTimeout(function() {
-        campos4.map(function(e) {
-          const self = this;
-          const params = {
-            name: e.name,
-            field_type: e.field_type
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/dealFields?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              console.log("campo creado con exito" + res);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-      }, 12000);
-      setTimeout(function() {
-        campos5.map(function(e) {
-          const self = this;
-          const params = {
-            name: e.name,
-            field_type: e.field_type,
-            options: e.options
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/dealFields?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              console.log("campo creado con exito" + res);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-      }, 15000);
-      setTimeout(function() {
-        campos6.map(function(e) {
-          const self = this;
-          const params = {
-            name: e.name,
-            field_type: e.field_type,
-            options: e.options
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/dealFields?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              console.log("campo creado con exito" + res);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-      }, 18000);
-      setTimeout(function() {
-        campos7.map(function(e) {
-          const self = this;
-          const params = {
-            name: e.name,
-            field_type: e.field_type,
-            options: e.options
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/dealFields?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              console.log("campo creado con exito" + res);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-      }, 21000);
-      setTimeout(function() {
-        campos8.map(function(e) {
-          const self = this;
-          const params = {
-            name: e.name,
-            field_type: e.field_type,
-            options: e.options
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/dealFields?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              console.log("campo creado con exito" + res);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-      }, 24000);
+        self.onCancelProyecto();
+      }, 35000);
     },
     //agregar campos a persona
     agregarCamposPersona(api) {
       const persona1 = datoPersona1;
-      const persona2 = datoPersona2;
-      const persona3 = datoPersona3;
+
       const self = this;
-
-      setTimeout(function() {
-        persona1.map(function(e) {
+      self.notification("Creando Campos personalizados de Personas", "info");
+      persona1.forEach(function(e, index, collection) {
+        setTimeout(function() {
           const self = this;
           const params = {
             name: e.name,
@@ -1096,71 +672,17 @@ export default {
             .catch(function(error) {
               console.log(error);
             });
-        });
-        self.notification("Creando Campos personalizados de Personas", "info");
-      }, 15000);
-
-      setTimeout(function() {
-        persona2.map(function(e) {
-          const self = this;
-          const params = {
-            name: e.name,
-            field_type: e.field_type,
-            options: e.options
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/personFields?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              console.log("campo creado con exito" + res);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-      }, 18000);
-
-      setTimeout(function() {
-        persona3.map(function(e) {
-          const params = {
-            name: e.name,
-            field_type: e.field_type,
-            options: e.options
-          };
-          const options = {
-            method: "POST",
-            headers: {
-              "content-type": "application/json"
-            },
-            data: params,
-            url: "https://api.pipedrive.com/v1/personFields?api_token=" + api
-          };
-          axios(options)
-            .then(function(res) {
-              console.log("campo creado con exito" + res);
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        });
-
-        self.onCancel();
-      }, 21000);
+        }, index * 1000);
+      });
     },
     //agregar embudos
-    agregarFiltros(api, nombre) {
-      this.notification("Creadon Filtros de Embudo " + nombre, "info");
+    agregarFiltros(api, nombre, contador) {
+      this.notification("Creando Filtros de Embudo " + nombre, "info");
       const estadoid = this.idstage;
       const self = this;
       const filtros = [
         {
-          name: "Atrasado Interesado " + nombre,
+          name: contador + ".1 Atrasado Interesado " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1171,7 +693,7 @@ export default {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[0][0].id,
+                    value: estadoid[0].id,
                     extra_value: null
                   },
                   {
@@ -1199,7 +721,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Cita Establecida " + nombre,
+          name: contador + ".2 Atrasado Cita Establecida " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1210,7 +732,7 @@ export default {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[2][2].id,
+                    value: estadoid[2].id,
                     extra_value: null
                   },
                   {
@@ -1218,7 +740,7 @@ export default {
                     field_id: "entered_stage",
                     operator: "<",
                     value: "1_week_ago",
-                    extra_value: estadoid[2][2].id
+                    extra_value: estadoid[2].id
                   },
                   {
                     object: "deal",
@@ -1238,7 +760,8 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Contactado sin 5 Seguimientos " + nombre,
+          name:
+            contador + ".3 Atrasado Contactado sin 5 Seguimientos " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1249,7 +772,7 @@ export default {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[1][1].id,
+                    value: estadoid[1].id,
                     extra_value: null
                   },
                   {
@@ -1257,7 +780,7 @@ export default {
                     field_id: "entered_stage",
                     operator: "<",
                     value: "1_week_ago",
-                    extra_value: estadoid[1][1].id
+                    extra_value: estadoid[1].id
                   },
                   {
                     object: "deal",
@@ -1284,7 +807,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Contactado " + nombre,
+          name: contador + ".4 Atrasado Contactado " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1295,7 +818,7 @@ export default {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[1][1].id,
+                    value: estadoid[1].id,
                     extra_value: null
                   },
                   {
@@ -1303,7 +826,7 @@ export default {
                     field_id: "entered_stage",
                     operator: "<",
                     value: "1_week_ago",
-                    extra_value: estadoid[1][1].id
+                    extra_value: estadoid[1].id
                   },
                   {
                     object: "deal",
@@ -1323,7 +846,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Interesado Sin 4 Llamadas " + nombre,
+          name: contador + ".5 Atrasado Interesado Sin 4 Llamadas " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1334,7 +857,7 @@ export default {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[0][0].id,
+                    value: estadoid[0].id,
                     extra_value: null
                   },
                   {
@@ -1369,7 +892,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Negociación " + nombre,
+          name: contador + ".6 Atrasado Negociación " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1380,7 +903,7 @@ export default {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[4][4].id,
+                    value: estadoid[4].id,
                     extra_value: null
                   },
                   {
@@ -1388,7 +911,7 @@ export default {
                     field_id: "entered_stage",
                     operator: "<",
                     value: "1_week_ago",
-                    extra_value: estadoid[4][4].id
+                    extra_value: estadoid[4].id
                   },
                   {
                     object: "deal",
@@ -1408,7 +931,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Reserva " + nombre,
+          name: contador + ".7 Atrasado Reserva " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1419,7 +942,7 @@ export default {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[5][5].id,
+                    value: estadoid[5].id,
                     extra_value: null
                   },
                   {
@@ -1427,7 +950,7 @@ export default {
                     field_id: "entered_stage",
                     operator: "<",
                     value: "1_week_ago",
-                    extra_value: estadoid[5][5].id
+                    extra_value: estadoid[5].id
                   },
                   {
                     object: "deal",
@@ -1447,7 +970,7 @@ export default {
           type: "deals"
         },
         {
-          name: "Atrasado Visitado " + nombre,
+          name: contador + ".8 Atrasado Visitado " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1458,7 +981,7 @@ export default {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[3][3].id,
+                    value: estadoid[3].id,
                     extra_value: null
                   },
                   {
@@ -1466,7 +989,7 @@ export default {
                     field_id: "entered_stage",
                     operator: "<",
                     value: "2_weeks_ago",
-                    extra_value: estadoid[3][3].id
+                    extra_value: estadoid[3].id
                   },
                   {
                     object: "deal",
@@ -1486,7 +1009,10 @@ export default {
           type: "deals"
         },
         {
-          name: "Perdido no contesta Seguimiento sin 5 Seguimientos " + nombre,
+          name:
+            contador +
+            ".9 Perdido no contesta Seguimiento sin 5 Seguimientos " +
+            nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1516,42 +1042,42 @@ export default {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[0][0].id,
+                    value: estadoid[0].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[1][1].id,
+                    value: estadoid[1].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[2][2].id,
+                    value: estadoid[2].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[3][3].id,
+                    value: estadoid[3].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[4][4].id,
+                    value: estadoid[4].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[5][5].id,
+                    value: estadoid[5].id,
                     extra_value: null
                   }
                 ]
@@ -1561,7 +1087,8 @@ export default {
           type: "deals"
         },
         {
-          name: "Perdido No contesta sin 4 seguimientos " + nombre,
+          name:
+            contador + ".10 Perdido No contesta sin 4 seguimientos " + nombre,
           conditions: {
             glue: "and",
             conditions: [
@@ -1591,42 +1118,42 @@ export default {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[0][0].id,
+                    value: estadoid[0].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[1][1].id,
+                    value: estadoid[1].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[2][2].id,
+                    value: estadoid[2].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[3][3].id,
+                    value: estadoid[3].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[4][4].id,
+                    value: estadoid[4].id,
                     extra_value: null
                   },
                   {
                     object: "deal",
                     field_id: self.etapaStage,
                     operator: "=",
-                    value: estadoid[5][5].id,
+                    value: estadoid[5].id,
                     extra_value: null
                   }
                 ]
@@ -1636,24 +1163,25 @@ export default {
           type: "deals"
         }
       ];
-      filtros.map(function(e) {
-        const self = this;
-        const params = e;
-        const options = {
-          method: "POST",
-          headers: {
-            "content-type": "application/json"
-          },
-          data: params,
-          url: "https://api.pipedrive.com/v1/filters?api_token=" + api
-        };
-        axios(options)
-          .then(function(res) {
-            console.log("Filtro Creado con exito" + res);
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+      filtros.forEach(function(e, index, collection) {
+        setTimeout(function() {
+          const params = e;
+          const options = {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            data: params,
+            url: "https://api.pipedrive.com/v1/filters?api_token=" + api
+          };
+          axios(options)
+            .then(function(res) {
+              console.log("Filtro Creado con exito" + res);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        }, index * 300);
       });
     }
   },

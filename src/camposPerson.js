@@ -63,9 +63,9 @@ const datoPersona1 = [
             "Unido"
         ]
     },
-]
 
-const datoPersona2 = [
+
+
     {
         name: "Edad",
         field_type: "double"
@@ -121,10 +121,7 @@ const datoPersona2 = [
             "Villa Canales",
             "San Miguel Petapa"
         ]
-    }
-]
-
-const datoPersona3 = [
+    },
     {
         name: "Dirección de Residencia",
         field_type: "address"
@@ -166,4 +163,4 @@ const datoPersona3 = [
     }
 ]
 
-export { datoPersona1, datoPersona2, datoPersona3 }
+export { datoPersona1 }
